@@ -24,14 +24,12 @@ jobs:
       - name: Build (static export)
         run: npm run build
 
-      - name: Upload via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Upload via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2
         with:
           server: ${{ secrets.CAFE24_HOST }}
           username: ${{ secrets.CAFE24_USER }}
-          password: ${{ secrets.CAFE24_PASSWORD }}
-          port: 21
-          protocol: ftp
+          ssh_private_key: ${{ secrets.CAFE24_SSH_KEY }}
+          # Todo : sshKey 수정 필요
           local-dir: out/
           server-dir: /www/2025_graduation_exhibition/
-          log-level: standard
