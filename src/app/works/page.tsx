@@ -19,22 +19,13 @@ function decodeSlug(slug: string) {
 }
 
 export default async function WorksPage() {
-  const { items: works, total } = await fetchAllWorks({
+  const { items: works } = await fetchAllWorks({
     per_page: 100,
     page: 1,
   });
 
   return (
     <div className="p-6 mx-auto max-w-5xl space-y-6">
-      <header className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Works</h1>
-        <p className="text-sm text-gray-500">
-          {total > 0
-            ? `총 ${total}개의 작품을 확인해보세요.`
-            : "등록된 작품이 아직 없습니다."}
-        </p>
-      </header>
-
       {works.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center text-sm text-gray-500">
           작품 데이터가 비어 있습니다.
@@ -44,8 +35,7 @@ export default async function WorksPage() {
           {works.map((work) => {
             const acfFields = getWorkAcfFields(work);
             const acfTitle = getWorkAcfTitle(work, acfFields);
-            const fallbackTitle =
-              work.title?.rendered || decodeSlug(work.slug);
+            const fallbackTitle = work.title?.rendered || decodeSlug(work.slug);
             const name = getWorkAcfName(work, acfFields);
             const categories = getWorkCategories(work);
             return (
