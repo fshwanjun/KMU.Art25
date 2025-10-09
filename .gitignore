@@ -28,3 +28,4 @@ EDGE/*
 !EDGE/.gitkeep
 .env.server
 wordpress/*
+.env

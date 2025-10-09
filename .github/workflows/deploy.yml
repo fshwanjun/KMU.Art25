@@ -1,0 +1,37 @@
+name: deploy-2025-exhibition
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Export static
+        run: npm run export
+
+      - name: Upload via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2
+        with:
+          server: ${{ secrets.CAFE24_HOST }}
+          username: ${{ secrets.CAFE24_USER }}
+          password: ${{ secrets.CAFE24_PASSWORD }}
+          local-dir: out/
+          server-dir: /www/2025_graduation_exhibition/
