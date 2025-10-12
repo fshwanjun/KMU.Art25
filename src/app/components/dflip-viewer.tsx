@@ -2,13 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState, useId } from "react";
 
-const DFLIP_BASE = "/plugins/dflip";
-const DFLIP_SCRIPT_SRC = `${DFLIP_BASE}/js/dflip.min.js`;
-const DFLIP_STYLES = [
-  { id: "dflip-style", href: `${DFLIP_BASE}/css/dflip.min.css` },
-  { id: "dflip-icons", href: `${DFLIP_BASE}/css/themify-icons.min.css` },
-];
-
 const scriptPromises = new Map<string, Promise<void>>();
 let jqueryReady: Promise<void> | null = null;
 
@@ -21,18 +14,82 @@ declare global {
   }
 }
 
+type StyleAsset = { id: string; href: string };
+
 type DFlipViewerProps = {
   pdfUrl: string;
   height?: number | string;
   className?: string;
 };
 
-function ensureStyles() {
+function resolveDFlipBase() {
+  const envBase = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const assetPrefix = (() => {
+    if (typeof window === "undefined") {
+      return envBase;
+    }
+    const globalWindow = window as {
+      __NEXT_DATA__?: { assetPrefix?: string };
+      __NEXT_ROUTER_BASEPATH?: string;
+      __next_router_basePath?: string;
+    };
+    const nextData = globalWindow.__NEXT_DATA__;
+    return (
+      nextData?.assetPrefix ??
+      globalWindow.__NEXT_ROUTER_BASEPATH ??
+      globalWindow.__next_router_basePath ??
+      envBase
+    );
+  })();
+
+  let base = assetPrefix.replace(/\/$/, "");
+
+  if (!base && typeof window !== "undefined") {
+    const chunkScript = document.querySelector<HTMLScriptElement>(
+      'script[src*="/_next/"]',
+    );
+    const src = chunkScript?.getAttribute("src");
+    if (src) {
+      const url = src.startsWith("http")
+        ? new URL(src)
+        : new URL(src, window.location.origin);
+      const pathName = url.pathname;
+      const idx = pathName.indexOf("/_next/");
+      if (idx > -1) {
+        base = pathName.slice(0, idx).replace(/\/$/, "");
+      }
+    }
+  }
+
+  if (!base && typeof window !== "undefined") {
+    const page = (window as { __NEXT_DATA__?: { page?: string } }).__NEXT_DATA__?.page;
+    if (page) {
+      const normalizedPage = page.replace(/\/$/, "");
+      const pathname = window.location.pathname.replace(/\/$/, "");
+      if (pathname.endsWith(normalizedPage)) {
+        base = pathname.slice(0, -normalizedPage.length).replace(/\/$/, "");
+      }
+    }
+  }
+
+  if (!base) {
+    return "/plugins/dflip";
+  }
+
+  if (/^https?:\/\//i.test(base)) {
+    return `${base}/plugins/dflip`;
+  }
+
+  const withLeading = base.startsWith("/") ? base : `/${base}`;
+  return `${withLeading}/plugins/dflip`;
+}
+
+function ensureStyles(styles: StyleAsset[]) {
   if (typeof document === "undefined") {
     return;
   }
 
-  DFLIP_STYLES.forEach(({ id, href }) => {
+  styles.forEach(({ id, href }) => {
     if (document.getElementById(id)) {
       return;
     }
@@ -97,13 +154,13 @@ async function ensureJQuery() {
   await jqueryReady;
 }
 
-async function ensureDFlip() {
+async function ensureDFlip(basePath: string) {
   if (typeof window === "undefined") {
     return;
   }
 
   await ensureJQuery();
-  await loadScript("dflip-core", DFLIP_SCRIPT_SRC);
+  await loadScript("dflip-core", `${basePath}/js/dflip.min.js`);
 
   if (!window.jQuery) {
     throw new Error("jQuery did not initialize correctly.");
@@ -113,7 +170,7 @@ async function ensureDFlip() {
     throw new Error("dFlip did not initialize correctly.");
   }
 
-  window.dFlipLocation = `${DFLIP_BASE}/`;
+  window.dFlipLocation = `${basePath}/`;
 }
 
 export function DFlipViewer({
@@ -121,6 +178,14 @@ export function DFlipViewer({
   height = 640,
   className,
 }: DFlipViewerProps) {
+  const dflipBase = useMemo(resolveDFlipBase, []);
+  const styleAssets = useMemo<StyleAsset[]>(
+    () => [
+      { id: "dflip-style", href: `${dflipBase}/css/dflip.min.css` },
+      { id: "dflip-icons", href: `${dflipBase}/css/themify-icons.min.css` },
+    ],
+    [dflipBase],
+  );
   const rawId = useId();
   const bookId = useMemo(() => `dflip-${rawId.replace(/[:]/g, "-")}`, [rawId]);
   const bookRef = useRef<HTMLDivElement | null>(null);
@@ -128,10 +193,10 @@ export function DFlipViewer({
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    ensureStyles();
+    ensureStyles(styleAssets);
     let cancelled = false;
 
-    ensureDFlip()
+    ensureDFlip(dflipBase)
       .then(() => {
         if (!cancelled) {
           setIsReady(true);
@@ -146,7 +211,7 @@ export function DFlipViewer({
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dflipBase, styleAssets]);
 
   useEffect(() => {
     if (!isReady || !bookRef.current || !pdfUrl) {
