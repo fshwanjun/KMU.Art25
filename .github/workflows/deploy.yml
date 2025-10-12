@@ -30,6 +30,5 @@ jobs:
           server: ${{ secrets.CAFE24_HOST }}
           username: ${{ secrets.CAFE24_USER }}
           ssh_private_key: ${{ secrets.CAFE24_SSH_KEY }}
-          # Todo : sshKey 수정 필요
-          local-dir: out/
-          server-dir: /www/2025_graduation_exhibition/
+          local_path: ./out/*
+          remote_path: /www/2025_graduation_exhibition/
