@@ -6,6 +6,9 @@ import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 export default async function AboutPage() {
   const aboutPage = await fetchBySlug("pages", "about");
   const aboutData = getScfData(aboutPage, FG_ABOUT);
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const trimmedBase = basePath.replace(/^\/|\/$/g, "");
+  const catalogHref = `/${trimmedBase ? `${trimmedBase}/` : ""}kmufa24.pdf`;
 
   const aboutInfo = aboutData.info as Array<{
     "info-title": string;
@@ -22,7 +25,10 @@ export default async function AboutPage() {
       <h3>{aboutData.date as string}</h3>
       {editorHtml && <div dangerouslySetInnerHTML={{ __html: editorHtml }} />}
       <div>
-        <DFlipViewer pdfUrl="/kmufa24.pdf" />
+        <a href={catalogHref} target="_blank" rel="noopener noreferrer">
+          Download Catalog (PDF)
+        </a>
+        <DFlipViewer pdfUrl={catalogHref} />
       </div>
       {poster && <img src={poster.url} alt={poster.alt ?? "poster"} />}
       {aboutInfo.map((item, index) => (

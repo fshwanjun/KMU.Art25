@@ -34,12 +34,28 @@ function resolveDFlipBase() {
       __next_router_basePath?: string;
     };
     const nextData = globalWindow.__NEXT_DATA__;
-    return (
+    const prefix =
       nextData?.assetPrefix ??
       globalWindow.__NEXT_ROUTER_BASEPATH ??
       globalWindow.__next_router_basePath ??
-      envBase
-    );
+      envBase;
+
+    if (!prefix && nextData?.page && typeof window !== "undefined") {
+      const pageSegments = nextData.page.split("/").filter(Boolean);
+      const currentSegments = window.location.pathname
+        .split("/")
+        .filter(Boolean);
+
+      if (currentSegments.length >= pageSegments.length) {
+        const baseSegments = currentSegments.slice(
+          0,
+          currentSegments.length - pageSegments.length,
+        );
+        return `/${baseSegments.join("/")}`.replace(/\/$/, "");
+      }
+    }
+
+    return prefix;
   })();
 
   let base = assetPrefix.replace(/\/$/, "");
@@ -82,6 +98,44 @@ function resolveDFlipBase() {
 
   const withLeading = base.startsWith("/") ? base : `/${base}`;
   return `${withLeading}/plugins/dflip`;
+}
+
+function joinWithBase(base: string, path: string) {
+  if (!base) {
+    return path;
+  }
+
+  const sanitizedPath = path.replace(/^\/+/, "");
+  if (/^https?:\/\//i.test(base)) {
+    return `${base.replace(/\/+$/, "")}/${sanitizedPath}`;
+  }
+
+  const baseWithLeading = base.startsWith("/") ? base : `/${base}`;
+  return `${baseWithLeading.replace(/\/+$/, "")}/${sanitizedPath}`;
+}
+
+function resolvePublicUrl(base: string, target: string) {
+  if (!target) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(target)) {
+    return target;
+  }
+
+  if (base && target.startsWith(base)) {
+    return target;
+  }
+
+  if (target.startsWith("/")) {
+    return joinWithBase(base, target);
+  }
+
+  if (target.startsWith("./") || target.startsWith("../")) {
+    return target;
+  }
+
+  return joinWithBase(base, `/${target}`);
 }
 
 function ensureStyles(styles: StyleAsset[]) {
@@ -179,12 +233,20 @@ export function DFlipViewer({
   className,
 }: DFlipViewerProps) {
   const dflipBase = useMemo(resolveDFlipBase, []);
+  const publicBase = useMemo(
+    () => dflipBase.replace(/\/plugins\/dflip$/, "") || "",
+    [dflipBase],
+  );
   const styleAssets = useMemo<StyleAsset[]>(
     () => [
       { id: "dflip-style", href: `${dflipBase}/css/dflip.min.css` },
       { id: "dflip-icons", href: `${dflipBase}/css/themify-icons.min.css` },
     ],
     [dflipBase],
+  );
+  const resolvedPdfUrl = useMemo(
+    () => resolvePublicUrl(publicBase, pdfUrl),
+    [pdfUrl, publicBase],
   );
   const rawId = useId();
   const bookId = useMemo(() => `dflip-${rawId.replace(/[:]/g, "-")}`, [rawId]);
@@ -214,7 +276,7 @@ export function DFlipViewer({
   }, [dflipBase, styleAssets]);
 
   useEffect(() => {
-    if (!isReady || !bookRef.current || !pdfUrl) {
+    if (!isReady || !bookRef.current || !resolvedPdfUrl) {
       return;
     }
 
@@ -244,7 +306,7 @@ export function DFlipViewer({
     } else {
       element.removeAttribute("height");
     }
-    element.setAttribute("source", pdfUrl);
+    element.setAttribute("source", resolvedPdfUrl);
 
     window.DFLIP?.parseBooks();
 
@@ -255,7 +317,7 @@ export function DFlipViewer({
       element.removeAttribute("parsed");
       element.removeAttribute("height");
     };
-  }, [bookId, height, isReady, pdfUrl]);
+  }, [bookId, height, isReady, resolvedPdfUrl]);
 
   if (initError) {
     return (
