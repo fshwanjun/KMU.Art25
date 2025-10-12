@@ -1,11 +1,10 @@
 import Link from "next/link";
+import { fetchAllWorks, getWorkCategories } from "@/lib/wp";
 import {
-  fetchAllWorks,
-  getWorkAcfFields,
-  getWorkAcfName,
-  getWorkAcfTitle,
-  getWorkCategories,
-} from "@/lib/wp";
+  getWorkScfFields,
+  getWorkScfName,
+  getWorkScfTitle,
+} from "@/lib/scf";
 
 export const dynamic = "force-static";
 export const revalidate = 300;
@@ -33,10 +32,10 @@ export default async function WorksPage() {
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {works.map((work) => {
-            const acfFields = getWorkAcfFields(work);
-            const acfTitle = getWorkAcfTitle(work, acfFields);
+            const scfFields = getWorkScfFields(work);
+            const scfTitle = getWorkScfTitle(work, scfFields);
             const fallbackTitle = work.title?.rendered || decodeSlug(work.slug);
-            const name = getWorkAcfName(work, acfFields);
+            const name = getWorkScfName(work, scfFields);
             const categories = getWorkCategories(work);
             return (
               <li key={work.id}>
@@ -47,8 +46,8 @@ export default async function WorksPage() {
                   <article className="flex h-full flex-col justify-between rounded-lg border border-gray-200 p-4 transition hover:border-gray-900 hover:shadow-sm">
                     <header className="space-y-2">
                       <h2 className="text-lg font-semibold leading-tight text-gray-900 group-hover:text-black">
-                        {acfTitle ? (
-                          acfTitle
+                        {scfTitle ? (
+                          scfTitle
                         ) : (
                           <span
                             dangerouslySetInnerHTML={{ __html: fallbackTitle }}

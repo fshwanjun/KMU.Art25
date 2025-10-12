@@ -1,11 +1,9 @@
+import { fetchAllWorks, fetchWorkBySlug, getWorkCategories } from "@/lib/wp";
 import {
-  fetchAllWorks,
-  fetchWorkBySlug,
-  getWorkAcfFields,
-  getWorkAcfName,
-  getWorkAcfTitle,
-  getWorkCategories,
-} from "@/lib/wp";
+  getWorkScfFields,
+  getWorkScfName,
+  getWorkScfTitle,
+} from "@/lib/scf";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-static";
@@ -31,18 +29,18 @@ export default async function WorkDetailPage({
     notFound();
   }
 
-  const acfFields = getWorkAcfFields(work);
-  const acfTitle = getWorkAcfTitle(work, acfFields);
+  const scfFields = getWorkScfFields(work);
+  const scfTitle = getWorkScfTitle(work, scfFields);
   const fallbackTitle = work.title?.rendered || decodeSlug(work.slug);
-  const name = getWorkAcfName(work, acfFields);
+  const name = getWorkScfName(work, scfFields);
   const categories = getWorkCategories(work);
 
   return (
     <div className="p-6 mx-auto max-w-3xl space-y-8">
       <header className="space-y-4">
         <h1 className="text-3xl font-semibold leading-tight">
-          {acfTitle ? (
-            acfTitle
+          {scfTitle ? (
+            scfTitle
           ) : (
             <span dangerouslySetInnerHTML={{ __html: fallbackTitle }} />
           )}
@@ -69,8 +67,8 @@ export default async function WorkDetailPage({
               Title
             </dt>
             <dd className="text-base text-gray-900">
-              {acfTitle ? (
-                acfTitle
+              {scfTitle ? (
+                scfTitle
               ) : (
                 <span dangerouslySetInnerHTML={{ __html: fallbackTitle }} />
               )}
@@ -113,14 +111,14 @@ export async function generateMetadata({
       title: "Work",
     };
   }
-  const acfFields = getWorkAcfFields(work);
-  const acfTitle =
-    getWorkAcfTitle(work, acfFields) ??
+  const scfFields = getWorkScfFields(work);
+  const scfTitle =
+    getWorkScfTitle(work, scfFields) ??
     work.title?.rendered ??
     decodeSlug(work.slug);
-  const acfName = getWorkAcfName(work, acfFields);
+  const scfName = getWorkScfName(work, scfFields);
 
   return {
-    title: acfName ? `${acfTitle} – ${acfName}` : acfTitle,
+    title: scfName ? `${scfTitle} – ${scfName}` : scfTitle,
   };
 }
