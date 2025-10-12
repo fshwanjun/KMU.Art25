@@ -1,14 +1,91 @@
 import { WP_BASE_URL } from "./constants";
-import type { WorkScfPayload } from "./scf";
 
 type SupportedWpType = "pages" | "posts" | string;
+type WpPrimitive = string | number | boolean;
+type WpQueryValue = WpPrimitive | ReadonlyArray<WpPrimitive>;
+export type WpQueryParams = Record<string, WpQueryValue | undefined>;
 
+export type WpCollectionResult<T> = {
+  items: T[];
+  total: number;
+  totalPages: number;
+};
+
+// 워드프레스 REST API에 전달할 쿼리 파라미터를 안전하게 문자열화합니다.
+function createSearchParams(params: WpQueryParams = {}) {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        searchParams.append(key, String(entry));
+      }
+      continue;
+    }
+    searchParams.append(key, String(value));
+  }
+  return searchParams;
+}
+
+// 응답 헤더에 포함된 숫자 값을 정수로 변환하고, 실패 시 기본값을 사용합니다.
+function parseHeaderInt(value: string | null, fallback: number) {
+  if (!value) {
+    return fallback;
+  }
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+// 페이지 번호처럼 양수 정수만 허용되는 파라미터를 정제합니다.
+function toPositiveInt(value: WpQueryValue | undefined) {
+  if (value === undefined) {
+    return undefined;
+  }
+  const candidate = Array.isArray(value) ? value[0] : value;
+  const numeric =
+    typeof candidate === "number" ? candidate : Number(candidate);
+  if (!Number.isFinite(numeric) || numeric < 1) {
+    return undefined;
+  }
+  return Math.floor(numeric);
+}
+
+// 목록 응답을 한 페이지 단위로 가져오는 공통 fetch 함수입니다.
+async function fetchWpCollectionPage<T>(
+  type: SupportedWpType,
+  params: WpQueryParams = {}
+): Promise<WpCollectionResult<T>> {
+  const searchParams = createSearchParams(params);
+  const query = searchParams.toString();
+  const endpoint = `${WP_BASE_URL}/wp-json/wp/v2/${encodeURIComponent(
+    type
+  )}${query ? `?${query}` : ""}`;
+  const res = await fetch(endpoint, {
+    headers: {
+      Accept: "application/json",
+    },
+    cache: "force-cache",
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`WP list fetch failed ${res.status} ${res.statusText}: ${text}`);
+  }
+
+  const items = (await res.json()) as T[];
+  const total = parseHeaderInt(res.headers.get("X-WP-Total"), items.length);
+  const totalPages = parseHeaderInt(res.headers.get("X-WP-TotalPages"), 1);
+  return { items, total, totalPages };
+}
+
+// 단일 노드를 id로 조회합니다.
 export async function fetchWpNode<T = any>(params: {
   type: SupportedWpType;
   id: string | number;
 }): Promise<T> {
   const { type, id } = params;
-  // 단일 노드를 가져오기 위해 타입과 ID를 조합한 WP REST URL을 생성합니다.
   const endpoint = `${WP_BASE_URL}/wp-json/wp/v2/${encodeURIComponent(
     type
   )}/${encodeURIComponent(String(id))}`;
@@ -16,7 +93,6 @@ export async function fetchWpNode<T = any>(params: {
     headers: {
       Accept: "application/json",
     },
-    // 정적 익스포트 빌드를 위한 캐시 설정
     cache: "force-cache",
   });
 
@@ -28,143 +104,49 @@ export async function fetchWpNode<T = any>(params: {
   return (await res.json()) as T;
 }
 
-export type WpPost = {
-  id: number;
-  date: string;
-  slug: string;
-  title?: { rendered?: string };
-  scf?: unknown;
-  _embedded?: Record<string, unknown>;
-};
-
-export type WorkPost = WpPost & {
-  scf?: WorkScfPayload;
-  _embedded?: {
-    "wp:term"?: Array<
-      Array<{
-        id: number;
-        name: string;
-        slug: string;
-        taxonomy?: string;
-      }>
-    >;
-  };
-};
-
-type FetchOptions = {
-  cache?: RequestCache;
-  next?: {
-    revalidate?: number;
-  };
-  headers?: HeadersInit;
-};
-
-export async function fetchWpList<T = any>(
+// 페이지네이션 응답을 모두 이어붙여 반환합니다.
+export async function fetchListAll<T = any>(
   type: SupportedWpType,
-  params: Record<string, string | number | boolean> = {},
-  options: FetchOptions = {}
-): Promise<{ items: T[]; total: number; totalPages: number }> {
-  // 워드프레스 목록 API는 쿼리스트링으로 필터링하므로 안전하게 문자열화합니다.
-  const qs = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => qs.set(k, String(v)));
-  if (!qs.has("per_page")) qs.set("per_page", "100");
-  if (!qs.has("page")) qs.set("page", "1");
-
-  const endpoint = `${WP_BASE_URL}/wp-json/wp/v2/${encodeURIComponent(
-    type
-  )}?${qs.toString()}`;
-  const res = await fetch(endpoint, {
-    headers: { Accept: "application/json", ...options.headers },
-    cache: options.cache ?? "force-cache",
-    next: options.next,
-    // 정적 익스포트 빌드를 위한 캐시 설정
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(
-      `WP list fetch failed ${res.status} ${res.statusText}: ${text}`
-    );
+  params: WpQueryParams = {}
+): Promise<WpCollectionResult<T>> {
+  const startPage = toPositiveInt(params.page) ?? 1;
+  const baseParams: WpQueryParams = {
+    ...params,
+    page: startPage,
+  };
+  const firstPage = await fetchWpCollectionPage<T>(type, baseParams);
+  if (firstPage.totalPages <= startPage) {
+    return firstPage;
   }
-  const total = Number(res.headers.get("X-WP-Total") || 0);
-  const totalPages = Number(res.headers.get("X-WP-TotalPages") || 0);
-  const items = (await res.json()) as T[];
-  return { items, total, totalPages };
-}
 
-export async function fetchAllPosts(
-  params: Record<string, string | number | boolean> = {}
-) {
-  const first = await fetchWpList<WpPost>("posts", params);
-  const pages = first.totalPages;
-  // 첫 페이지의 결과를 기반으로 총 페이지 수를 확인한 뒤 모든 페이지를 순회합니다.
-  const results: WpPost[] = [...first.items];
-  for (let p = 2; p <= pages; p++) {
-    const pageRes = await fetchWpList<WpPost>("posts", { ...params, page: p });
-    results.push(...pageRes.items);
+  const items = [...firstPage.items];
+  for (let page = startPage + 1; page <= firstPage.totalPages; page += 1) {
+    const nextPage = await fetchWpCollectionPage<T>(type, {
+      ...baseParams,
+      page,
+    });
+    items.push(...nextPage.items);
   }
-  return results;
+
+  return {
+    items,
+    total: firstPage.total,
+    totalPages: firstPage.totalPages,
+  };
 }
 
-type WorkCategory = {
-  id: number;
-  name: string;
-  slug: string;
-};
-
-function extractEmbeddedTerms(embedded: WorkPost["_embedded"]): WorkCategory[] {
-  const terms = embedded?.["wp:term"];
-  if (!Array.isArray(terms)) return [];
-  // 워드프레스는 카테고리를 2차원 배열로 내려주므로 플랫하게 만든 뒤 필요한 속성만 추립니다.
-  const categories = terms.flat().filter(
-    (
-      term
-    ): term is {
-      id: number;
-      name: string;
-      slug: string;
-      taxonomy?: string;
-    } =>
-      term &&
-      typeof term.id === "number" &&
-      typeof term.name === "string" &&
-      (!term.taxonomy || term.taxonomy === "category")
-  );
-  return categories.map(({ id, name, slug }) => ({ id, name, slug }));
-}
-
-export function getWorkCategories(work: WorkPost): WorkCategory[] {
-  return extractEmbeddedTerms(work._embedded);
-}
-
-export async function fetchWorksList(
-  params: Record<string, string | number | boolean> = {}
-) {
-  return fetchWpList<WorkPost>(
-    "works",
-    {
-      _embed: "1",
-      ...params,
-    },
-    {
-      cache: "no-store",
-    }
-  );
-}
-
-export async function fetchWorkBySlug(slug: string) {
-  const { items } = await fetchWorksList({ slug, per_page: 1 });
+// 슬러그로 특정 게시물을 찾아 반환합니다.
+export async function fetchBySlug<T = any>(
+  type: SupportedWpType,
+  slug: string,
+  params: WpQueryParams = {}
+): Promise<T | null> {
+  const mergedParams: WpQueryParams = {
+    ...params,
+    slug,
+    per_page: 1,
+    page: 1,
+  };
+  const { items } = await fetchWpCollectionPage<T>(type, mergedParams);
   return items[0] ?? null;
-}
-
-export async function fetchAllWorks(
-  params: Record<string, string | number | boolean> = {}
-) {
-  const first = await fetchWorksList(params);
-  const results = [...first.items];
-  const totalPages = first.totalPages || 1;
-  for (let page = 2; page <= totalPages; page++) {
-    const { items } = await fetchWorksList({ ...params, page });
-    results.push(...items);
-  }
-  return { items: results, total: first.total };
 }

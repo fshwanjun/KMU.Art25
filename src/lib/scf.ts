@@ -1,99 +1,37 @@
-type PlainObject = Record<string, unknown>;
-
-function isPlainObject(value: unknown): value is PlainObject {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-export type WorkScfGroup =
-  | (PlainObject & {
-      title?: string | null;
-      name?: string | null;
-    })
-  | null;
-
-export type WorkScfCore = {
-  fg_work?: WorkScfGroup;
-  works?: WorkScfGroup;
-  [key: string]: unknown;
+export type ScfDescriptor = {
+  title: string;
+  fields: Record<string, string>;
 };
 
-export type WorkScfPayload = WorkScfCore | null | undefined;
-
-function isWorkScfCore(value: unknown): value is WorkScfCore {
-  return isPlainObject(value);
-}
-
-type WithScfPayload = {
-  scf?: WorkScfPayload;
+// Smart Custom Fields가 붙은 워드프레스 노드가 공통적으로 갖는 구조입니다.
+type WpNodeWithAcf = {
+  acf?: Record<string, unknown>;
 };
 
-export function getWorkScfFields<T extends WithScfPayload>(
-  work: T
-): WorkScfPayload {
-  return work.scf ?? null;
-}
+export type ScfData<T extends ScfDescriptor> = {
+  [Key in keyof T["fields"]]: unknown;
+};
 
-function pickGroupValue(
-  group: WorkScfGroup | undefined,
-  key: string
-): string | null {
-  if (!group || !isPlainObject(group)) return null;
-  const value = group[key];
-  return typeof value === "string" ? value : null;
-}
-
-function pickScfString(fields: WorkScfCore, key: string): string | null {
-  const value = fields[key];
-  return typeof value === "string" ? value : null;
-}
-
-export function getWorkScfTitle<T extends WithScfPayload>(
-  work: T,
-  scfFields: WorkScfPayload = getWorkScfFields(work)
-): string | null {
-  if (!isWorkScfCore(scfFields)) return null;
-  const fgWork = scfFields.fg_work;
-  const works = scfFields.works;
-
-  const candidates = [
-    pickGroupValue(fgWork, "title"),
-    pickGroupValue(fgWork, "work_title"),
-    pickGroupValue(works, "title"),
-    pickGroupValue(works, "work_title"),
-    pickScfString(scfFields, "fg_work_title"),
-    pickScfString(scfFields, "works_title"),
-    pickScfString(scfFields, "work_title"),
-    pickScfString(scfFields, "work_title_en"),
-    pickScfString(scfFields, "title"),
-  ];
-
-  for (const value of candidates) {
-    if (value) return value;
+// 필드 그룹(descriptor)에 정의된 키를 기준으로 ACF 데이터를 읽어옵니다.
+export function getScfData<T extends ScfDescriptor>(
+  node: WpNodeWithAcf | null | undefined,
+  descriptor: T
+): ScfData<T> {
+  const result: Record<string, unknown> = {};
+  const acf = node?.acf ?? {};
+  for (const [alias, fieldKey] of Object.entries(descriptor.fields)) {
+    const rawValue = (acf as Record<string, unknown>)[fieldKey];
+    // Smart Custom Fields는 formatted_value를 제공하므로 우선적으로 사용합니다.
+    if (
+      rawValue &&
+      typeof rawValue === "object" &&
+      !Array.isArray(rawValue) &&
+      "formatted_value" in (rawValue as Record<string, unknown>)
+    ) {
+      result[alias] = (rawValue as Record<string, unknown>).formatted_value;
+      continue;
+    }
+    result[alias] = rawValue ?? null;
   }
-  return null;
-}
-
-export function getWorkScfName<T extends WithScfPayload>(
-  work: T,
-  scfFields: WorkScfPayload = getWorkScfFields(work)
-): string | null {
-  if (!isWorkScfCore(scfFields)) return null;
-  const fgWork = scfFields.fg_work;
-  const works = scfFields.works;
-
-  const candidates = [
-    pickGroupValue(fgWork, "name"),
-    pickGroupValue(fgWork, "work_name"),
-    pickGroupValue(works, "name"),
-    pickGroupValue(works, "work_name"),
-    pickScfString(scfFields, "fg_work_name"),
-    pickScfString(scfFields, "works_name"),
-    pickScfString(scfFields, "work_name"),
-    pickScfString(scfFields, "name"),
-  ];
-
-  for (const value of candidates) {
-    if (value) return value;
-  }
-  return null;
+  return result as ScfData<T>;
 }

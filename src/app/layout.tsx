@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description: "국민대학교 미술학부 회화전공 졸업전시 2025",
 };
 
+export const dynamic = "force-static";
+export const revalidate = 300;
+
 export default function RootLayout({
   children,
 }: Readonly<{
