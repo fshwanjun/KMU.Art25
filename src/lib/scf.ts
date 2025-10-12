@@ -1,6 +1,13 @@
 export type ScfDescriptor = {
   title: string;
-  fields: Record<string, string>;
+  fields: Record<
+    string,
+    | string
+    | {
+        _key: string; // 실제 ACF에서의 그룹 키
+        fields: Record<string, string>;
+      }
+  >;
 };
 
 // Smart Custom Fields가 붙은 워드프레스 노드가 공통적으로 갖는 구조입니다.
@@ -9,7 +16,11 @@ type WpNodeWithAcf = {
 };
 
 export type ScfData<T extends ScfDescriptor> = {
-  [Key in keyof T["fields"]]: unknown;
+  [Key in keyof T["fields"]]: T["fields"][Key] extends string
+    ? unknown
+    : T["fields"][Key] extends { fields: infer F }
+    ? { [K in keyof F]: unknown }
+    : never;
 };
 
 // 필드 그룹(descriptor)에 정의된 키를 기준으로 ACF 데이터를 읽어옵니다.
@@ -17,22 +28,38 @@ export function getScfData<T extends ScfDescriptor>(
   node: WpNodeWithAcf | null | undefined,
   descriptor: T
 ): ScfData<T> {
-  const result: Record<string, unknown> = {};
-  const acf = node?.acf ?? {};
-  for (const [alias, fieldKey] of Object.entries(descriptor.fields)) {
-    const rawValue = (acf as Record<string, unknown>)[fieldKey];
-    // Smart Custom Fields는 formatted_value를 제공하므로 우선적으로 사용합니다.
+  const acf = (node?.acf ?? {}) as Record<string, unknown>;
+
+  function readField(value: unknown): unknown {
     if (
-      rawValue &&
-      typeof rawValue === "object" &&
-      !Array.isArray(rawValue) &&
-      "formatted_value" in (rawValue as Record<string, unknown>)
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      "formatted_value" in (value as Record<string, unknown>)
     ) {
-      result[alias] = (rawValue as Record<string, unknown>).formatted_value;
+      return (value as Record<string, unknown>).formatted_value;
+    }
+    return value ?? null;
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const [alias, fieldDef] of Object.entries(descriptor.fields)) {
+    if (typeof fieldDef === "string") {
+      result[alias] = readField(acf[fieldDef]);
       continue;
     }
-    result[alias] = rawValue ?? null;
+    // 그룹(객체) 필드 처리
+    const groupKey = fieldDef._key;
+    const groupRaw = acf[groupKey];
+    const groupObj: Record<string, unknown> = {};
+    const groupAcf = (typeof groupRaw === "object" && groupRaw) || {};
+    for (const [childAlias, childFieldKey] of Object.entries(fieldDef.fields)) {
+      const childValue = (groupAcf as Record<string, unknown>)[childFieldKey];
+      groupObj[childAlias] = readField(childValue);
+    }
+    result[alias] = groupObj;
   }
+
   return result as ScfData<T>;
 }
 

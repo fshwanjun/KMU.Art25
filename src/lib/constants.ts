@@ -8,6 +8,16 @@ export const FG_WORK = {
   fields: {
     title: "title",
     name: "name",
+    name_en: "name_en",
+    artgallery: "artgallery",
+    contact: {
+      _key: "contact",
+      fields: {
+        insta: "insta",
+        mail: "mail",
+        oneword: "oneword",
+      },
+    },
   },
 };
 
