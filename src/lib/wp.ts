@@ -62,6 +62,7 @@ export type WorkAcfGroup = {
 export type WorkPost = WpPost & {
   acf?:
     | {
+        works?: WorkAcfGroup | null;
         work?: WorkAcfGroup | null;
         title?: string | null;
         name?: string | null;
@@ -250,7 +251,7 @@ export function getWorkAcfFields(work: WorkPost) {
 type AcfSelector = string | string[];
 
 /**
- * `"title"` 또는 `["work", "title"]`처럼 후보 셀렉터 배열을 순회하며 첫 번째 유효한 문자열을 찾아 반환합니다.
+ * `"title"` 또는 `["works", "title"]`처럼 후보 셀렉터 배열을 순회하며 첫 번째 유효한 문자열을 찾아 반환합니다.
  */
 export function resolveAcfText(
   acf: NormalizedAcf,
@@ -276,9 +277,12 @@ export function getWorkAcfTitle(
 ) {
   return (
     resolveAcfText(acfFields, [
+      ["works", "title"],
+      ["works", "work_title"],
       ["work", "title"],
       ["work", "work_title"],
       "title",
+      "works_title",
       "work_title",
       "work_title_en",
     ]) ?? null
@@ -294,9 +298,12 @@ export function getWorkAcfName(
 ) {
   return (
     resolveAcfText(acfFields, [
+      ["works", "name"],
+      ["works", "work_name"],
       ["work", "name"],
       ["work", "work_name"],
       "name",
+      "works_name",
       "work_name",
     ]) ?? null
   );
@@ -306,7 +313,7 @@ export async function fetchWorksList(
   params: Record<string, string | number | boolean> = {}
 ) {
   return fetchWpList<WorkPost>(
-    "work",
+    "works",
     {
       _embed: "1",
       acf_format: "standard",
