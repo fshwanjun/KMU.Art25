@@ -31,4 +31,4 @@ jobs:
           username: ${{ secrets.CAFE24_USER }}
           ssh_private_key: ${{ secrets.CAFE24_SSH_KEY }}
           local_path: ./out/*
-          remote_path: /www/2025_graduation_exhibition/
+          remote_path: /art4465/www/2025_graduation_exhibition/
