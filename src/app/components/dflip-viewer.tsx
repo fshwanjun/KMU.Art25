@@ -40,16 +40,20 @@ function resolveDFlipBase() {
       globalWindow.__next_router_basePath ??
       envBase;
 
-    if (!prefix && nextData?.page && typeof window !== "undefined") {
-      const pageSegments = nextData.page.split("/").filter(Boolean);
+    if (!prefix && typeof window !== "undefined") {
       const currentSegments = window.location.pathname
         .split("/")
         .filter(Boolean);
 
+      const page = (window as { __NEXT_DATA__?: { page?: string } })
+        .__NEXT_DATA__?.page;
+      if (!page) return "";
+
+      const pageSegments = page.split("/").filter(Boolean);
       if (currentSegments.length >= pageSegments.length) {
         const baseSegments = currentSegments.slice(
           0,
-          currentSegments.length - pageSegments.length,
+          currentSegments.length - pageSegments.length
         );
         return `/${baseSegments.join("/")}`.replace(/\/$/, "");
       }
@@ -62,7 +66,7 @@ function resolveDFlipBase() {
 
   if (!base && typeof window !== "undefined") {
     const chunkScript = document.querySelector<HTMLScriptElement>(
-      'script[src*="/_next/"]',
+      'script[src*="/_next/"]'
     );
     const src = chunkScript?.getAttribute("src");
     if (src) {
@@ -78,7 +82,8 @@ function resolveDFlipBase() {
   }
 
   if (!base && typeof window !== "undefined") {
-    const page = (window as { __NEXT_DATA__?: { page?: string } }).__NEXT_DATA__?.page;
+    const page = (window as { __NEXT_DATA__?: { page?: string } }).__NEXT_DATA__
+      ?.page;
     if (page) {
       const normalizedPage = page.replace(/\/$/, "");
       const pathname = window.location.pathname.replace(/\/$/, "");
@@ -235,18 +240,18 @@ export function DFlipViewer({
   const dflipBase = useMemo(resolveDFlipBase, []);
   const publicBase = useMemo(
     () => dflipBase.replace(/\/plugins\/dflip$/, "") || "",
-    [dflipBase],
+    [dflipBase]
   );
   const styleAssets = useMemo<StyleAsset[]>(
     () => [
       { id: "dflip-style", href: `${dflipBase}/css/dflip.min.css` },
       { id: "dflip-icons", href: `${dflipBase}/css/themify-icons.min.css` },
     ],
-    [dflipBase],
+    [dflipBase]
   );
   const resolvedPdfUrl = useMemo(
     () => resolvePublicUrl(publicBase, pdfUrl),
-    [pdfUrl, publicBase],
+    [pdfUrl, publicBase]
   );
   const rawId = useId();
   const bookId = useMemo(() => `dflip-${rawId.replace(/[:]/g, "-")}`, [rawId]);
