@@ -15,7 +15,27 @@ export const FG_ABOUT = {
   title: "fg-about",
   key: "group_68eb4028473d1",
   fields: {
-    host: "host",
+    title: "title",
+    date: "date",
     info: "info",
+    poster: "poster",
+  },
+};
+
+export const FG_BEHIND = {
+  title: "fg-behind",
+  key: "group_68ebc0624b1a8",
+  fields: {
+    behindgallery: "behindgallery",
+  },
+};
+
+export const FG_ARCHIVE = {
+  title: "fg-archive",
+  key: "group_68ebcb41f176d",
+  fields: {
+    archiverepeater: "archiverepeater",
+    gallerytype: "gallerytype",
+    repeatergallery: "repeatergallery",
   },
 };

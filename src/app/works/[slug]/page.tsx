@@ -16,8 +16,10 @@ export default async function WorkDetailPage({
 }) {
   const { slug } = await params;
   const work = await fetchBySlug("works", decodeSlug(slug), { _embed: "1" });
+
+  const workData = getScfData(work, FG_WORK);
   if (!work) {
     return notFound();
   }
-  return <h1>{getScfData(work, FG_WORK).title}</h1>;
+  return <h1>{workData.title as string}</h1>;
 }
