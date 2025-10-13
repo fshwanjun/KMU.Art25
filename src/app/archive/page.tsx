@@ -2,6 +2,7 @@ import { FG_ARCHIVE } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import { twMerge } from "tailwind-merge";
+// import HoverCaptionImage from "@/app/components/HoverCaptionImage";
 
 export default async function ArchivePage() {
   const archivePage = await fetchBySlug("pages", "archive");
@@ -56,7 +57,7 @@ export default async function ArchivePage() {
             )}
           >
             {group.images.map((m, index) => (
-              <div className="w-full aspect-[16/9] mb-4" key={index}>
+              <div className="relative w-full aspect-[16/9] mb-4" key={index}>
                 <img
                   className="w-full h-full object-cover"
                   src={m.url}

@@ -24,15 +24,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="w-full h-full">
+    <html lang="ko">
       <body
         className={twMerge(
-          "w-full min-h-screen px-4 py-4 pt-20 antialiased font-suite bg-[url('/images/bg.jpg')] bg-fixed bg-center",
+          "antialiased font-suite bg-[url('/images/bg.jpg')] bg-fixed bg-center bg-cover bg-no-repeat",
           hsYeoleum.variable
         )}
       >
         <Header />
-        {children}
+        <main className="px-4 pt-20 w-full h-full overflow-auto">
+          {children}
+        </main>
       </body>
     </html>
   );

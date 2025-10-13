@@ -34,7 +34,7 @@ export default async function AboutPage() {
         <section className="col-span-4 relative top-0 left-0 w-full h-full">
           {poster && (
             <img
-              className="sticky top-14 max-h-2/3 w-full object-contain"
+              className="sticky top-0 max-h-2/3 w-full object-contain"
               src={poster.url}
               alt={poster.alt ?? "poster"}
               draggable={false}
