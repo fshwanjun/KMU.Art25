@@ -18,25 +18,53 @@ export default async function AboutPage() {
   const editorHtml = (aboutPage as any)?.content?.rendered as
     | string
     | undefined;
+  const dateRaw = aboutData.date as unknown;
+  const dateHtml = Array.isArray(dateRaw)
+    ? dateRaw.join("<br />")
+    : typeof dateRaw === "object" &&
+      dateRaw &&
+      "formatted_value" in (dateRaw as Record<string, unknown>)
+    ? String((dateRaw as any).formatted_value ?? "")
+    : typeof dateRaw === "string"
+    ? (dateRaw as string).replace(/\n/g, "<br />")
+    : "";
   return (
-    <div>
-      <h1>about</h1>
-      <h2>{aboutData.title as string}</h2>
-      <h3>{aboutData.date as string}</h3>
-      {editorHtml && <div dangerouslySetInnerHTML={{ __html: editorHtml }} />}
-      <div>
-        <a href={catalogHref} target="_blank" rel="noopener noreferrer">
-          Download Catalog (PDF)
-        </a>
-        <DFlipViewer pdfUrl={catalogHref} />
+    <div className="w-full max-w-[1200px] mx-auto">
+      <div className="relative top-0 left-0 grid grid-cols-10 gap-[20px] mb-12">
+        <section className="col-span-4 relative top-0 left-0 w-full h-full">
+          {poster && (
+            <img
+              className="sticky top-14 max-h-2/3 w-full object-contain"
+              src={poster.url}
+              alt={poster.alt ?? "poster"}
+              draggable={false}
+            />
+          )}
+        </section>
+        <section className="col-span-5 col-start-6 flex flex-col gap-8">
+          <div>
+            <h2>{aboutData.title as string}</h2>
+            {dateHtml && <h3 dangerouslySetInnerHTML={{ __html: dateHtml }} />}
+          </div>
+          {editorHtml && (
+            <div dangerouslySetInnerHTML={{ __html: editorHtml }} />
+          )}
+          <div>
+            {aboutInfo.map((item, index) => (
+              <div
+                key={`${item["info-title"]}-${index}`}
+                className="grid gap-4 grid-cols-5 mb-3"
+              >
+                <p className="col-span-2">{item["info-title"]}</p>
+                <p className="col-span-3">{item["info-name"]}</p>
+              </div>
+            ))}
+          </div>
+        </section>
       </div>
-      {poster && <img src={poster.url} alt={poster.alt ?? "poster"} />}
-      {aboutInfo.map((item, index) => (
-        <div key={`${item["info-title"]}-${index}`}>
-          <h3>{item["info-title"]}</h3>
-          <p>{item["info-name"]}</p>
-        </div>
-      ))}
+      <div className="mb-12">
+        <DFlipViewer pdfUrl={catalogHref} className="bg-gray-500" />
+      </div>
     </div>
   );
 }

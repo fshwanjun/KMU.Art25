@@ -1,6 +1,7 @@
 import { FG_ARCHIVE } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
+import { twMerge } from "tailwind-merge";
 
 export default async function ArchivePage() {
   const archivePage = await fetchBySlug("pages", "archive");
@@ -35,18 +36,33 @@ export default async function ArchivePage() {
     })
   );
   return (
-    <div>
-      <h1>Archive</h1>
+    <div className="w-full max-w-[1200px] mx-auto">
       {normalized.map((group, idx) => (
-        <section key={idx} className="flex flex-row max-w-2xl mx-auto">
-          {group.galleryType && <h2>{group.galleryType}</h2>}
-          <div className="w-1/2">
+        <section key={idx} className="grid grid-cols-10 gap-[20px] mb-16">
+          {group.galleryType && (
+            <h2
+              className={twMerge(
+                "col-span-3 order-2",
+                idx % 2 === 0 ? "text-left" : "text-right"
+              )}
+            >
+              {group.galleryType}
+            </h2>
+          )}
+          <div
+            className={twMerge(
+              "col-span-7",
+              idx % 2 === 0 ? "order-1" : "order-2"
+            )}
+          >
             {group.images.map((m, index) => (
-              <div key={index}>
-                <img src={m.url} alt={m.alt ?? "archive"} />
-                {m.caption && (
-                  <div dangerouslySetInnerHTML={{ __html: m.caption }} />
-                )}
+              <div className="w-full aspect-[16/9] mb-4" key={index}>
+                <img
+                  className="w-full h-full object-cover"
+                  src={m.url}
+                  alt={m.alt ?? "archive"}
+                  draggable={false}
+                />
               </div>
             ))}
           </div>

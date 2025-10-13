@@ -68,3 +68,16 @@ html {
   font-style: normal;
   font-display: swap;
 }
+
+h1 {
+  @apply font-bold;
+}
+h2 {
+  @apply font-bold;
+}
+h3 {
+  @apply font-bold;
+}
+p {
+  @apply font-normal;
+}

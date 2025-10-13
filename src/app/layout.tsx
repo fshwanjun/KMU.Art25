@@ -24,8 +24,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className={twMerge("antialiased font-suite")}>
+    <html lang="ko" className="w-full h-full">
+      <body
+        className={twMerge(
+          "w-full min-h-screen px-4 py-4 pt-20 antialiased font-suite bg-[url('/images/bg.jpg')] bg-fixed bg-center",
+          hsYeoleum.variable
+        )}
+      >
         <Header />
         {children}
       </body>
