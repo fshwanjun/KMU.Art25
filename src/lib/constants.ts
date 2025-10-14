@@ -11,6 +11,7 @@ export const FG_WORK = {
     name_en: "name_en",
     artgallery: "artgallery",
     thumbnail: "thumbnail",
+    desc: "desc",
     contact: {
       _key: "contact",
       fields: {

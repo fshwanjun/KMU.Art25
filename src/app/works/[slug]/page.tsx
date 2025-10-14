@@ -31,28 +31,59 @@ export default async function WorkDetailPage({
     return notFound();
   }
   return (
-    <div>
-      <h1>{workData.title as string}</h1>
-      <h2>{workData.name as string}</h2>
-      <h2>{workData.name_en as string}</h2>
-      <h2>@{(workData.contact as any)?.insta as string}</h2>
-      <h2>{(workData.contact as any)?.mail as string}</h2>
-      <h2>{(workData.contact as any)?.oneword as string}</h2>
-      {images
-        .filter(
-          (
-            m
-          ): m is { url: string; alt: string | null; caption: string | null } =>
-            Boolean(m)
-        )
-        .map((m, index) => (
-          <div key={index}>
-            <img src={m.url} alt={m.alt ?? "behind"} />
-            {m.caption && (
-              <div dangerouslySetInnerHTML={{ __html: m.caption }} />
-            )}
+    <div className="relative mx-auto max-w-[1200px] grid grid-cols-10 gap-[20px] h-max">
+      <div className="col-span-3 sticky top-0 h-fit">
+        <h1 className="mb-1">{workData.title as string}</h1>
+        <h2>{workData.name as string}</h2>
+        <div className="max-h-[36em] h-[60vh] overflow-y-auto my-6">
+          <p>{workData.desc as string}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-[20px]">
+          <h2 className="col-span-1 uppercase">Contact</h2>
+          <div className="col-span-2 flex flex-col">
+            <a
+              href={`https://www.instagram.com/${
+                (workData.contact as any)?.insta as string
+              }`}
+            >
+              @{(workData.contact as any)?.insta as string}
+            </a>
+            <a href={`mailto:${(workData.contact as any)?.mail as string}`}>
+              {(workData.contact as any)?.mail as string}
+            </a>
           </div>
-        ))}
+        </div>
+      </div>
+      <div className="col-span-6 col-start-5 flex flex-col gap-8 pb-12">
+        {images
+          .filter(
+            (
+              m
+            ): m is {
+              url: string;
+              alt: string | null;
+              caption: string | null;
+            } => Boolean(m)
+          )
+          .map((m, index) => (
+            <div
+              key={index}
+              className="relative w-full flex flex-col items-center justify-center gap-2"
+            >
+              <img
+                src={m.url}
+                alt={m.alt ?? "behind"}
+                className="w-auto h-auto max-h-[80vh] object-contain"
+              />
+              {m.caption && (
+                <span
+                  dangerouslySetInnerHTML={{ __html: m.caption }}
+                  className="text-center text-[14px] font-normal text-gray-500"
+                />
+              )}
+            </div>
+          ))}
+      </div>
     </div>
   );
 }
