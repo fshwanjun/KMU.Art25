@@ -42,13 +42,19 @@ export default async function WorkDetailPage({
           <h2 className="col-span-1 uppercase">Contact</h2>
           <div className="col-span-2 flex flex-col">
             <a
+              className=" text-black  hover:text-gray-500 transition-colors duration-200 "
+              target="_blank"
               href={`https://www.instagram.com/${
                 (workData.contact as any)?.insta as string
               }`}
             >
               @{(workData.contact as any)?.insta as string}
             </a>
-            <a href={`mailto:${(workData.contact as any)?.mail as string}`}>
+            <a
+              className=" text-black  hover:text-gray-500 transition-colors duration-200 "
+              target="_blank"
+              href={`mailto:${(workData.contact as any)?.mail as string}`}
+            >
               {(workData.contact as any)?.mail as string}
             </a>
           </div>

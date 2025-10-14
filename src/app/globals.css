@@ -38,5 +38,5 @@ p {
   @apply font-semibold text-[14px] leading-[1.64] break-keep;
 }
 a {
-  @apply text-black hover:text-gray-500 transition-colors duration-200 cursor-pointer;
+  @apply cursor-pointer;
 }

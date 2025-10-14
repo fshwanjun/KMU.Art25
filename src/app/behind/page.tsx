@@ -21,8 +21,10 @@ export default async function BehindPage() {
   const rowB = list.filter((_, i) => i % 2 === 1);
 
   return (
-    <HorizontalWheelScroller className="fixed top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-full overflow-x-scroll overflow-y-hidden px-[5%] py-[20%]">
-      <BehindRowsClient rowA={rowA} rowB={rowB} />
-    </HorizontalWheelScroller>
+    <div className="relative h-full w-full overflow-hidden">
+      <HorizontalWheelScroller className="absolute top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-full overflow-x-scroll overflow-y-hidden px-[5%] py-[20%]">
+        <BehindRowsClient rowA={rowA} rowB={rowB} />
+      </HorizontalWheelScroller>
+    </div>
   );
 }
