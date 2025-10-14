@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
+import WorksGridClient from "@/app/components/WorksGridClient";
 
 export default async function WorksPage() {
   const { items: works } = await fetchListAll("works", {
@@ -17,34 +17,27 @@ export default async function WorksPage() {
     })
   );
 
+  const gridItems = items.map(({ work, data, thumb }) => ({
+    id: work.id,
+    slug: work.slug,
+    title: (data.title as string) ?? "",
+    name: (data.name as string) ?? "",
+    thumbnail: thumb?.url
+      ? {
+          url: thumb.url,
+          alt:
+            (thumb.alt as string | null | undefined) ??
+            ((data.title as string) ?? null),
+        }
+      : null,
+  }));
+
   return (
     <div className="mx-auto max-w-[1200px] space-y-6">
       {works.length === 0 ? (
         <div className="rounded-lg">작품 데이터가 비어 있습니다.</div>
       ) : (
-        <ul className="grid gap-20 grid-cols-3">
-          {items.map(({ work, data, thumb }) => (
-            <li key={work.id} className="h-fit">
-              <Link
-                href={`/works/${encodeURIComponent(work.slug)}`}
-                className="group h-full flex flex-col items-center justify-start gap-2"
-              >
-                {thumb?.url ? (
-                  <img
-                    src={thumb.url}
-                    alt={(thumb.alt ?? (data.title as string) ?? "") as string}
-                  />
-                ) : null}
-                <div className="text-center">
-                  <h1>{data.title as string}</h1>
-                  <p className="text-[14px] font-normal">
-                    {data.name as string}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <WorksGridClient items={gridItems} />
       )}
     </div>
   );
