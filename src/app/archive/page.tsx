@@ -2,7 +2,6 @@ import { FG_ARCHIVE } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import { twMerge } from "tailwind-merge";
-// import HoverCaptionImage from "@/app/components/HoverCaptionImage";
 
 export default async function ArchivePage() {
   const archivePage = await fetchBySlug("pages", "archive");
