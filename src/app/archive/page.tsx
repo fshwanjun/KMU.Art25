@@ -1,7 +1,8 @@
 import { FG_ARCHIVE } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
-import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
+import { getScfData, resolveScfMediaUrl, ScfResolvedMedia } from "@/lib/scf";
 import { twMerge } from "tailwind-merge";
+import ArchiveImagesClient from "@/app/archive/ArchiveImagesClient";
 
 export default async function ArchivePage() {
   const archivePage = await fetchBySlug("pages", "archive");
@@ -26,12 +27,7 @@ export default async function ArchivePage() {
       );
       return {
         galleryType: galleryType ?? null,
-        images: images.filter(
-          (
-            m
-          ): m is { url: string; alt: string | null; caption: string | null } =>
-            Boolean(m)
-        ),
+        images: images.filter((m): m is ScfResolvedMedia => Boolean(m)),
       };
     })
   );
@@ -55,16 +51,7 @@ export default async function ArchivePage() {
               idx % 2 === 0 ? "order-1" : "order-2"
             )}
           >
-            {group.images.map((m, index) => (
-              <div className="relative w-full aspect-[16/9] mb-4" key={index}>
-                <img
-                  className="w-full h-full object-cover"
-                  src={m.url}
-                  alt={m.alt ?? "archive"}
-                  draggable={false}
-                />
-              </div>
-            ))}
+            <ArchiveImagesClient images={group.images} />
           </div>
         </section>
       ))}

@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./components/header";
 import localFont from "next/font/local";
 import { twMerge } from "tailwind-merge";
+import LightboxProvider from "./components/LightboxProvider";
 
 const hsYeoleum = localFont({
   src: "../../public/fonts/HSYeoleum.woff",
@@ -49,10 +50,12 @@ export default function RootLayout({
           backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/bg.jpg)`,
         }}
       >
-        <Header />
-        <main className="px-4 pt-20 w-full h-full overflow-auto">
-          {children}
-        </main>
+        <LightboxProvider>
+          <Header />
+          <main className="px-4 pt-20 w-full h-full overflow-auto">
+            {children}
+          </main>
+        </LightboxProvider>
       </body>
     </html>
   );

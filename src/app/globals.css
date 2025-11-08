@@ -3,16 +3,21 @@
 :root {
   --white: #ffffff;
   --black: #171717;
+  --gray: #adaaa9;
 }
 
 html {
   background: var(--white);
   color: var(--black);
+  font-size: 16px;
+  font-family: var(--font-suite), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-weight: 600;
 }
 
 html,
 body {
-  @apply w-full h-full;
+  @apply w-full h-full break-keep;
 }
 
 /* 선택적으로 적용할 수 있는 폰트 클래스 */
@@ -39,4 +44,9 @@ p {
 }
 a {
   @apply cursor-pointer;
+}
+
+/* input 초기화 */
+input {
+  @apply outline-none;
 }

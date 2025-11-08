@@ -1,6 +1,8 @@
 "use client";
 
 import HoverCaptionImage from "@/app/components/HoverCaptionImage";
+import { useLightbox } from "@/app/components/LightboxProvider";
+import ImageLightbox from "@/app/components/ImageLightbox";
 
 type ImageItem = {
   url: string;
@@ -21,6 +23,7 @@ export default function HoverBlurRow({
   heightClass = "h-[40vh]",
   gapClass,
 }: HoverBlurRowProps) {
+  const { openLightbox } = useLightbox();
   return (
     <div
       className={`flex flex-row items-center ${heightClass} md:${heightClass} w-max ${
@@ -34,12 +37,20 @@ export default function HoverBlurRow({
             key={key}
             className="relative h-full w-auto shrink-0 transition duration-200 group-hover:[&:not(:hover)]:blur-[4px] hover:z-10"
           >
-            <HoverCaptionImage
-              src={m.url}
-              alt={m.alt}
-              caption={m.caption}
-              className="relative h-full w-auto shrink-0"
-            />
+            <div className="relative h-full w-auto shrink-0">
+              <div
+                className="absolute inset-0 z-20 cursor-zoom-in"
+                onClick={() =>
+                  openLightbox({ src: m.url, alt: m.alt, caption: m.caption })
+                }
+              />
+              <HoverCaptionImage
+                src={m.url}
+                alt={m.alt}
+                caption={m.caption}
+                className="relative h-full w-auto shrink-0"
+              />
+            </div>
           </div>
         );
       })}

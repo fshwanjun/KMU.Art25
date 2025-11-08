@@ -10,6 +10,7 @@ export const FG_WORK = {
     name: "name",
     name_en: "name_en",
     artgallery: "artgallery",
+    zone: "zone",
     thumbnail: "thumbnail",
     desc: "desc",
     contact: {
