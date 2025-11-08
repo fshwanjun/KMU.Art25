@@ -4,6 +4,7 @@ import Header from "./components/header";
 import localFont from "next/font/local";
 import { twMerge } from "tailwind-merge";
 import LightboxProvider from "./components/LightboxProvider";
+import MainContainer from "./components/MainContainer";
 
 const hsYeoleum = localFont({
   src: "../../public/fonts/HSYeoleum.woff",
@@ -47,14 +48,14 @@ export default function RootLayout({
           suite.variable
         )}
         style={{
-          backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/bg.jpg)`,
+          backgroundImage: `url(${
+            process.env.NEXT_PUBLIC_BASE_PATH ?? ""
+          }/images/bg.jpg)`,
         }}
       >
         <LightboxProvider>
           <Header />
-          <main className="px-4 pt-20 w-full h-full overflow-auto">
-            {children}
-          </main>
+          <MainContainer>{children}</MainContainer>
         </LightboxProvider>
       </body>
     </html>

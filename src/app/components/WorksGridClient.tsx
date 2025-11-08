@@ -80,7 +80,7 @@ export default function WorksGridClient({ items }: WorksGridClientProps) {
           })}
         </div>
       </div>
-      <ul className="grid grid-cols-3 gap-20 pt-20 overflow-hidden">
+      <ul className="grid grid-cols-3 gap-20 overflow-hidden">
         {filteredItems.map((item, index) => {
           const isBlurred = hoveredIndex !== null && hoveredIndex !== index;
           const hasThumbnail = Boolean(item.thumbnail?.url);
