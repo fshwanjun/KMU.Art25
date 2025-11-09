@@ -2,6 +2,7 @@ import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import WorksGridClient from "@/app/components/WorksGridClient";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 export default async function WorksPage() {
   const { items: works } = await fetchListAll("works", {
@@ -97,8 +98,10 @@ export default async function WorksPage() {
       {works.length === 0 ? (
         <div className="rounded-lg">작품 데이터가 비어 있습니다.</div>
       ) : (
-        <WorksGridClient items={gridItems} />
+        <WorksGridClient items={gridItems} className="z-10" />
       )}
+
+      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

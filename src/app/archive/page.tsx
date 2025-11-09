@@ -3,6 +3,7 @@ import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl, ScfResolvedMedia } from "@/lib/scf";
 import { twMerge } from "tailwind-merge";
 import ArchiveImagesClient from "@/app/archive/ArchiveImagesClient";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 export default async function ArchivePage() {
   const archivePage = await fetchBySlug("pages", "archive");
@@ -55,6 +56,8 @@ export default async function ArchivePage() {
           </div>
         </section>
       ))}
+
+      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full " />
     </div>
   );
 }

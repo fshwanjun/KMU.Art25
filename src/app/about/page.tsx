@@ -2,6 +2,7 @@ import { DFlipViewer } from "@/app/components/dflip-viewer";
 import { FG_ABOUT } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 export default async function AboutPage() {
   const aboutPage = await fetchBySlug("pages", "about");
@@ -65,6 +66,7 @@ export default async function AboutPage() {
       <div className="mb-12">
         <DFlipViewer pdfUrl={catalogHref} className="bg-gray-500" />
       </div>
+      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

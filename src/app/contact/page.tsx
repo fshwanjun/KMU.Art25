@@ -2,6 +2,7 @@ import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData } from "@/lib/scf";
 import ContactLinksClient from "@/app/components/ContactLinksClient";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 export default async function ContactPage() {
   const { items: works } = await fetchListAll("works", {
@@ -23,6 +24,7 @@ export default async function ContactPage() {
   return (
     <div className="pb-24 mx-auto max-w-[1200px]">
       <ContactLinksClient works={prepared} />
+      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

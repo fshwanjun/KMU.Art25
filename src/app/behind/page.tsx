@@ -3,6 +3,7 @@ import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import HorizontalWheelScroller from "@/app/components/HorizontalWheelScroller";
 import BehindRowsClient from "./../components/BehindRowsClient";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 export default async function BehindPage() {
   const behindPage = await fetchBySlug("pages", "behind");
@@ -21,9 +22,10 @@ export default async function BehindPage() {
 
   return (
     <div className="relative h-full w-full overflow-hidden">
-      <HorizontalWheelScroller className="absolute top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-full overflow-x-scroll overflow-y-hidden px-[5%] py-[20%]">
+      <HorizontalWheelScroller className="absolute top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-full overflow-x-scroll overflow-y-hidden px-[5%] py-[20%] z-10">
         <BehindRowsClient rowA={rowA} rowB={rowB} />
       </HorizontalWheelScroller>
+      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full" />
     </div>
   );
 }

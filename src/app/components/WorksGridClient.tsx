@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 type Thumbnail = {
   url: string;
@@ -20,9 +21,13 @@ type WorksGridItem = {
 
 type WorksGridClientProps = {
   items: WorksGridItem[];
+  className?: string;
 };
 
-export default function WorksGridClient({ items }: WorksGridClientProps) {
+export default function WorksGridClient({
+  items,
+  className,
+}: WorksGridClientProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [filter, setFilter] = useState<
     "all" | "gallery" | "lobby" | "oneoneone"
@@ -52,7 +57,12 @@ export default function WorksGridClient({ items }: WorksGridClientProps) {
 
   return (
     <>
-      <div className="fixed right-8 top-4 z-50 flex items-start gap-6">
+      <div
+        className={twMerge(
+          "fixed right-8 top-4 z-50 flex items-start gap-6",
+          className
+        )}
+      >
         <input
           type="text"
           value={query}
