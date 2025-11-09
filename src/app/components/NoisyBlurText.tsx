@@ -212,7 +212,7 @@ export default function NoisyBlurText({
   className,
   tileScale = 0.9,
   gapX = 160,
-  gapY = 180,
+  gapY = 150,
   offsetX = 250,
   offsetY = 220,
   noiseScale = 0.003,
