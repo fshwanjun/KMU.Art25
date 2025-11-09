@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 type ImageLightboxProps = {
-  children: React.ReactElement;
+  children: React.ReactElement<any>;
   backdropClassName?: string;
   contentClassName?: string;
 };
@@ -42,42 +42,43 @@ export default function ImageLightbox({
   }, [open]);
 
   const trigger = useMemo(() => {
-    return React.cloneElement(children, {
-      onClick: (e: React.MouseEvent) => {
-        children.props?.onClick?.(e);
-        if (!e.defaultPrevented) openModal(e);
-      },
-      style: {
-        ...(children.props?.style ?? {}),
-        cursor: "zoom-in",
-      },
-    });
+    return React.cloneElement(
+      children as React.ReactElement<any>,
+      {
+        onClick: (e: React.MouseEvent) => {
+          children.props?.onClick?.(e);
+          if (!e.defaultPrevented) openModal(e);
+        },
+        style: {
+          ...(children.props?.style ?? {}),
+          cursor: "zoom-in",
+        },
+      } as any
+    );
   }, [children, openModal]);
 
   const modalContent = useMemo(() => {
     // Clone child and force max sizing to fit viewport
-    return React.cloneElement(children, {
-      onClick: (e: React.MouseEvent) => {
-        // prevent image click from closing immediately if needed
-        e.stopPropagation();
-      },
-      draggable: false,
-      style: {
-        ...(children.props?.style ?? {}),
-        maxWidth: "90vw",
-        maxHeight: "90vh",
-        width: "auto",
-        height: "auto",
-        objectFit: "contain",
-        cursor: "zoom-out",
-      },
-      className: [
-        children.props?.className ?? "",
-        "block",
-      ]
-        .join(" ")
-        .trim(),
-    });
+    return React.cloneElement(
+      children as React.ReactElement<any>,
+      {
+        onClick: (e: React.MouseEvent) => {
+          // prevent image click from closing immediately if needed
+          e.stopPropagation();
+        },
+        draggable: false,
+        style: {
+          ...(children.props?.style ?? {}),
+          maxWidth: "90vw",
+          maxHeight: "90vh",
+          width: "auto",
+          height: "auto",
+          objectFit: "contain",
+          cursor: "zoom-out",
+        },
+        className: [children.props?.className ?? "", "block"].join(" ").trim(),
+      } as any
+    );
   }, [children]);
 
   return (
@@ -106,5 +107,3 @@ export default function ImageLightbox({
     </>
   );
 }
-
-

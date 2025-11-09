@@ -13,10 +13,9 @@ export default async function BehindPage() {
   const images = await Promise.all(
     (rawGallery ?? []).map((item) => resolveScfMediaUrl(item))
   );
-  const list = images.filter(
-    (m): m is { url: string; alt: string | null; caption: string | null } =>
-      Boolean(m)
-  );
+  const list = images
+    .filter((m): m is import("@/lib/scf").ScfResolvedMedia => Boolean(m))
+    .map(({ url, alt, caption }) => ({ url, alt, caption }));
   const rowA = list.filter((_, i) => i % 2 === 0);
   const rowB = list.filter((_, i) => i % 2 === 1);
 
