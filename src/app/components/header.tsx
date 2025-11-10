@@ -42,9 +42,9 @@ export default function Header() {
               {item.label}
             </div>
             <img
-              src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/header/${
-                item.label
-              }.png`}
+              src={`${
+                process.env.NEXT_PUBLIC_BASE_PATH ?? ""
+              }/images/header/${item.label.toLowerCase()}.png`}
               alt={item.label}
               className={twMerge(
                 "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-auto h-full transition-all duration-100 scale-200 pointer-events-none",
