@@ -7,6 +7,7 @@ type HoverCaptionImageProps = {
   alt?: string | null;
   caption?: string | null;
   className?: string;
+  onClick?: () => void;
 };
 
 export default function HoverCaptionImage({
@@ -14,6 +15,7 @@ export default function HoverCaptionImage({
   alt,
   caption,
   className,
+  onClick,
 }: HoverCaptionImageProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
@@ -40,6 +42,7 @@ export default function HoverCaptionImage({
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onMouseMove={onMouseMove}
+      onClick={onClick}
       style={visible ? { position: "relative", zIndex: 100 } : undefined}
     >
       <div className="h-full w-auto">
