@@ -13,9 +13,7 @@ export default function MainContainer({ children }: PropsWithChildren) {
   const paddingTopClass = isBehind ? "pt-20" : "pt-40";
 
   return (
-    <main
-      className={twMerge("px-4 w-full h-full overflow-auto", paddingTopClass)}
-    >
+    <main className={twMerge("w-full h-full overflow-auto", paddingTopClass)}>
       {children}
       <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px] z-10 pointer-events-none" />
     </main>
