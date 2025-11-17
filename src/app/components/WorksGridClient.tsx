@@ -90,7 +90,7 @@ export default function WorksGridClient({
           })}
         </div>
       </div>
-      <ul className="grid grid-cols-3 gap-20 overflow-hidden">
+      <ul className="grid grid-cols-3 gap-y-12 gap-x-2 p-2 py-12 md:py-0 md:p-4 md:gap-y-20 md:gap-x-20 overflow-hidden">
         {filteredItems.map((item, index) => {
           const isBlurred = hoveredIndex !== null && hoveredIndex !== index;
           const hasThumbnail = Boolean(item.thumbnail?.url);
@@ -123,8 +123,10 @@ export default function WorksGridClient({
                     </div>
                   )}
                   <div
-                    className="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] -translate-x-1/2 text-center text-black transition duration-200"
-                    style={{ opacity: hoveredIndex === index ? 1 : 0 }}
+                    className="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] -translate-x-1/2 text-center text-black transition duration-200 opacity-100 md:opacity-0"
+                    style={{
+                      opacity: hoveredIndex === index ? 1 : undefined,
+                    }}
                   >
                     <h1>{item.title}</h1>
                     <p>{item.name}</p>

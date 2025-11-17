@@ -22,7 +22,7 @@ export default async function ContactPage() {
     };
   });
   return (
-    <div className="pb-24 mx-auto max-w-[1200px] relative z-20">
+    <div className="pb-24 p-4 mx-auto max-w-[1200px] relative z-20">
       <ContactLinksClient works={prepared} />
     </div>
   );
