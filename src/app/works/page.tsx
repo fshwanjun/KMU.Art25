@@ -94,14 +94,12 @@ export default async function WorksPage() {
   }));
 
   return (
-    <div className="mx-auto max-w-[1200px] space-y-6">
+    <div className="mx-auto max-w-[1200px] space-y-6 relative z-20">
       {works.length === 0 ? (
         <div className="rounded-lg">작품 데이터가 비어 있습니다.</div>
       ) : (
         <WorksGridClient items={gridItems} className="z-10" />
       )}
-
-      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

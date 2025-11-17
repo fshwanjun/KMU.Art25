@@ -22,7 +22,7 @@ export default function Header() {
     currentPath === href || currentPath.startsWith(`${href}/`);
 
   return (
-    <header className="py-4 px-4 fixed top-0 left-0 right-0 z-50 flex flex-row items-start">
+    <header className="py-4 px-4 fixed top-0 left-0 right-0 z-50 flex flex-row items-start w-fit">
       <Link href="/">
         <img
           src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/title.svg`}

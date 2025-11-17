@@ -21,11 +21,10 @@ export default async function BehindPage() {
   const rowB = list.filter((_, i) => i % 2 === 1);
 
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden relative z-20">
       <HorizontalWheelScroller className="absolute top-1/2 left-[52%] -translate-x-1/2 -translate-y-1/2 w-full overflow-x-scroll overflow-y-hidden px-[5%] py-[20%] z-10">
         <BehindRowsClient rowA={rowA} rowB={rowB} />
       </HorizontalWheelScroller>
-      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full" />
     </div>
   );
 }

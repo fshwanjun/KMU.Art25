@@ -22,9 +22,8 @@ export default async function ContactPage() {
     };
   });
   return (
-    <div className="pb-24 mx-auto max-w-[1200px]">
+    <div className="pb-24 mx-auto max-w-[1200px] relative z-20">
       <ContactLinksClient works={prepared} />
-      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default async function AboutPage() {
     ? (dateRaw as string).replace(/\n/g, "<br />")
     : "";
   return (
-    <div className="w-full max-w-[1200px] mx-auto">
+    <div className="w-full max-w-[1200px] mx-auto  relative z-20">
       <div className="relative top-0 left-0 grid grid-cols-10 gap-[20px] mb-12">
         <section className="col-span-4 relative top-0 left-0 w-full h-full">
           {poster && (
@@ -66,7 +66,6 @@ export default async function AboutPage() {
       <div className="mb-12">
         <DFlipViewer pdfUrl={catalogHref} className="bg-gray-500" />
       </div>
-      <BgTitleSvg addClassName="fixed top-0 left-0 w-full h-full filter blur-[2px]" />
     </div>
   );
 }

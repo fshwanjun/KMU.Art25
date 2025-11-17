@@ -59,7 +59,7 @@ export default function WorksGridClient({
     <>
       <div
         className={twMerge(
-          "fixed right-8 top-4 z-50 flex items-start gap-6",
+          "fixed right-8 top-4 flex items-start gap-6",
           className
         )}
       >
