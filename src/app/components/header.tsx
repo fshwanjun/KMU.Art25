@@ -21,12 +21,12 @@ export default function Header() {
 
   const isActive = (href: string) =>
     currentPath === href || currentPath.startsWith(`${href}/`);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  useEffect(() => {
-    setIsMenuOpen(false);
-  }, [currentPath]);
-  const activeLink = links.find((item) => isActive(item.href));
   const isHomeActive = currentPath === "/" || currentPath === "";
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(isHomeActive);
+  useEffect(() => {
+    setIsMenuOpen(isHomeActive);
+  }, [currentPath, isHomeActive]);
+  const activeLink = links.find((item) => isActive(item.href));
   const activeDisplay = isHomeActive
     ? { href: "/", label: "Home" }
     : activeLink ?? null;
@@ -37,7 +37,7 @@ export default function Header() {
     : null;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex w-full flex-row items-start gap-4 p-2 md:w-fit md:gap-8 md:p-4">
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-row items-start gap-4 p-2 md:w-fit md:gap-8 md:p-4" >
       <Link href="/" className="hidden md:block">
         <img
           src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/title.svg`}
@@ -58,7 +58,7 @@ export default function Header() {
       {!isMenuOpen && activeDisplay && (
         <Link
           href={activeDisplay.href}
-          className="relative font-yeoleum uppercase md:hidden flex items-center justify-center px-0 py-0 md:px-2 md:py-1"
+          className="relative font-yeoleum uppercase md:hidden flex items-center justify-center px-0 py-0 md:px-2 md:py-1 z-50"
         >
           <span
             className={twMerge(
@@ -80,26 +80,28 @@ export default function Header() {
               )}
             />
           )}
-        </Link>
+        </Link>  
       )}
       <nav
         id="mobile-nav"
         className={twMerge(
-          "font-yeoleum uppercase md:hidden flex-col gap-2",
+          "font-yeoleum uppercase md:hidden flex-col gap-2 z-50",
           isMenuOpen ? "flex" : "hidden"
         )}
       >
-        <Link href="/">
-          <div
-            className={twMerge(
-              "transition capitalize font-yeoleum"
-            )}
-          >
-            Home
-          </div>
-        </Link>
+        {!isHomeActive && (
+          <Link href="/" className="relative z-50">
+            <div
+              className={twMerge(
+                "transition capitalize font-yeoleum"
+              )}
+            >
+              Home
+            </div>
+          </Link>
+        )}
         {links.map((item) => (
-          <Link key={item.href} href={item.href} className="relative">
+          <Link key={item.href} href={item.href} className="relative z-50">
             <div
               className={twMerge(
                 "transition filter hover:blur-[2px] capitalize",
@@ -123,10 +125,10 @@ export default function Header() {
         <img
           src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/images/main.png`}
           alt="menu"
-          className="absolute top-0 right-0 w-[268px] top-2.5 right-3 md:hidden"
+          className="absolute top-0 right-0 w-[268px] top-2.5 right-3 md:hidden z-50"
         />
       </nav>
-      <nav className="gap-8 font-yeoleum uppercase hidden md:flex flex-row">
+      <nav className="gap-8 font-yeoleum uppercase hidden md:flex flex-row z-50">
         {links.map((item) => (
           <Link key={item.href} href={item.href} className="relative">
             <div
@@ -150,6 +152,9 @@ export default function Header() {
           </Link>
         ))}
       </nav>
+      {isMenuOpen && !isHomeActive && (
+        <div className="w-full h-full fixed top-0 left-0 z-30 bg-white/40 backdrop-blur-[2px]" />
+      )}
     </header>
   );
 }

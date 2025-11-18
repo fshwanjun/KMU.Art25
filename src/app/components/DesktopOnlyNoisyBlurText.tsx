@@ -13,12 +13,11 @@ const NoisyBlurText = dynamic<NoisyBlurTextProps>(
 );
 
 export default function DesktopOnlyNoisyBlurText(props: NoisyBlurTextProps) {
-  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(DESKTOP_MEDIA_QUERY).matches;
-  });
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const mediaQuery = window.matchMedia(DESKTOP_MEDIA_QUERY);
     const update = (event: MediaQueryListEvent | MediaQueryList) => {
       setIsDesktop(event.matches);
