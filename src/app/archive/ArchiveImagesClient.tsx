@@ -17,7 +17,7 @@ export default function ArchiveImagesClient({
   return (
     <>
       {images.map((m, index) => (
-        <div className="relative w-full aspect-[16/9] mb-4" key={index}>
+        <div className="relative w-full aspect-[16/9] mb-2 md:mb-4" key={index}>
           <img
             className="w-full h-full object-cover cursor-zoom-in"
             src={m.url}

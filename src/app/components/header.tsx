@@ -14,7 +14,7 @@ export default function Header() {
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
     { href: "/works", label: "Works" },
-    // { href: "/archive", label: "Archive", hidden: true },
+    { href: "/archive", label: "Archive" },
     { href: "/behind", label: "Behind" },
   ] as const;
 

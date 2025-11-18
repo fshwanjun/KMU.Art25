@@ -32,9 +32,9 @@ export default async function ArchivePage() {
     })
   );
   return (
-    <div className="w-full max-w-[1200px] mx-auto">
+    <div className="w-full max-w-[1200px] mx-auto p-2 md:p-4">
       {normalized.map((group, idx) => (
-        <section key={idx} className="grid grid-cols-10 gap-[20px] mb-16">
+        <section key={idx} className="grid grid-cols-10 gap-2 md:gap-[20px] mb-3 md:mb-16">
           {group.galleryType && (
             <h2
               className={twMerge(
