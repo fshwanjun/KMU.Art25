@@ -10,7 +10,7 @@ export default function MainContainer({ children }: PropsWithChildren) {
   const isBehind =
     pathname === "/behind" ||
     (pathname != null && pathname.startsWith("/behind/"));
-  const paddingTopClass = isBehind ? "pt-20" : "pt-20 md:pt-40";
+  const paddingTopClass = isBehind ? "pt-20" : "pt-12 md:pt-40";
 
   return (
     <main className={twMerge("w-full h-full overflow-auto", paddingTopClass)}>

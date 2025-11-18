@@ -59,7 +59,7 @@ export default function WorksGridClient({
     <>
       <div
         className={twMerge(
-          "fixed right-8 top-4 flex items-start gap-6",
+          "relative p-2 md:p-0 md:fixed md:right-8 md:top-4 flex items-start gap-6 mb-0",
           className
         )}
       >
@@ -69,7 +69,7 @@ export default function WorksGridClient({
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search"
           aria-label="검색"
-          className="border-zinc-500 border-b-1 text-black font-[600] inline-block"
+          className="border-zinc-500 border-b-1 text-black font-[600] inline-block w-full md:w-auto"
         />
         <div className="flex flex-col">
           {Object.entries(zoneLabels).map(([key, label]) => {
@@ -80,7 +80,7 @@ export default function WorksGridClient({
                 type="button"
                 onClick={() => setFilter(key as typeof filter)}
                 className={[
-                  "text-left cursor-pointer",
+                  "text-left cursor-pointer md:pr-0 pr-3",
                   isActive ? "text-black" : "text-zinc-500",
                 ].join(" ")}
               >
@@ -90,7 +90,7 @@ export default function WorksGridClient({
           })}
         </div>
       </div>
-      <ul className="grid grid-cols-3 gap-y-12 gap-x-2 p-2 py-12 md:py-0 md:p-4 md:gap-y-20 md:gap-x-20 overflow-hidden">
+      <ul className="grid grid-cols-3 gap-y-12 gap-x-2 p-2 py-4 md:py-0 md:p-4 md:gap-y-20 md:gap-x-20 overflow-hidden">
         {filteredItems.map((item, index) => {
           const isBlurred = hoveredIndex !== null && hoveredIndex !== index;
           const hasThumbnail = Boolean(item.thumbnail?.url);

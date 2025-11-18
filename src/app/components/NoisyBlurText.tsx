@@ -420,3 +420,5 @@ export default function NoisyBlurText({
     </div>
   );
 }
+
+export type { Props as NoisyBlurTextProps };
