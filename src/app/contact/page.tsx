@@ -2,23 +2,38 @@ import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData } from "@/lib/scf";
 import ContactLinksClient from "@/app/components/ContactLinksClient";
-import BgTitleSvg from "../components/BgTitleSvg";
+type WorkNode = {
+  id: number;
+  slug: string;
+  acf?: Record<string, unknown>;
+};
 
 export default async function ContactPage() {
-  const { items: works } = await fetchListAll("works", {
+  const { items: works } = await fetchListAll<WorkNode>("works", {
     per_page: 100,
     page: 1,
   });
   const prepared = works.map((work) => {
     const workData = getScfData(work, FG_WORK);
+    const contactField =
+      (workData.contact as Record<string, unknown> | undefined) ?? undefined;
     return {
       id: work.id,
       slug: work.slug,
-      name: (workData.name as string) ?? "",
-      nameEn: (workData.name_en as string) ?? "",
-      oneWord: ((workData.contact as any)?.oneword as string) ?? "",
-      instagram: ((workData.contact as any)?.insta as string) ?? "",
-      email: ((workData.contact as any)?.mail as string) ?? "",
+      name: typeof workData.name === "string" ? workData.name : "",
+      nameEn: typeof workData.name_en === "string" ? workData.name_en : "",
+      oneWord:
+        typeof contactField?.["oneword"] === "string"
+          ? (contactField["oneword"] as string)
+          : "",
+      instagram:
+        typeof contactField?.["insta"] === "string"
+          ? (contactField["insta"] as string)
+          : "",
+      email:
+        typeof contactField?.["mail"] === "string"
+          ? (contactField["mail"] as string)
+          : "",
     };
   });
   return (

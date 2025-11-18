@@ -2,8 +2,6 @@
 
 import HoverCaptionImage from "@/app/components/HoverCaptionImage";
 import { useLightbox } from "@/app/components/LightboxProvider";
-import ImageLightbox from "@/app/components/ImageLightbox";
-
 type ImageItem = {
   url: string;
   alt: string | null;

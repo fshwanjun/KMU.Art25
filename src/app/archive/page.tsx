@@ -4,8 +4,12 @@ import { getScfData, resolveScfMediaUrl, ScfResolvedMedia } from "@/lib/scf";
 import { twMerge } from "tailwind-merge";
 import ArchiveImagesClient from "@/app/archive/ArchiveImagesClient";
 
+type ArchiveNode = {
+  acf?: Record<string, unknown>;
+};
+
 export default async function ArchivePage() {
-  const archivePage = await fetchBySlug("pages", "archive");
+  const archivePage = await fetchBySlug<ArchiveNode>("pages", "archive");
   const archiveRepeater = getScfData(archivePage, FG_ARCHIVE)
     .archiverepeater as unknown | undefined;
   const rows: Array<Record<string, unknown>> = Array.isArray(archiveRepeater)

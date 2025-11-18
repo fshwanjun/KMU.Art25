@@ -19,7 +19,7 @@ export default function HorizontalWheelScroller({
     const el = ref.current;
     if (!el) return;
 
-    function onWheel(e: WheelEvent) {
+    const onWheel = (e: WheelEvent) => {
       // Only translate vertical scroll gestures to horizontal when the element is horizontally scrollable
       const node = ref.current;
       if (!node || e.deltaY === 0) return;
@@ -29,10 +29,10 @@ export default function HorizontalWheelScroller({
       e.preventDefault();
       // Scroll horizontally by the vertical delta; tune factor if needed
       node.scrollLeft = Math.max(0, Math.min(max, node.scrollLeft + e.deltaY));
-    }
+    };
 
     el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel as any);
+    return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
   return (

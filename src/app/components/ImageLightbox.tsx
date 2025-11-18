@@ -2,8 +2,15 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
+type LightboxChildProps = {
+  onClick?: (event: React.MouseEvent) => void;
+  style?: React.CSSProperties;
+  className?: string;
+  draggable?: boolean;
+};
+
 type ImageLightboxProps = {
-  children: React.ReactElement<any>;
+  children: React.ReactElement<LightboxChildProps>;
   backdropClassName?: string;
   contentClassName?: string;
 };
@@ -42,43 +49,37 @@ export default function ImageLightbox({
   }, [open]);
 
   const trigger = useMemo(() => {
-    return React.cloneElement(
-      children as React.ReactElement<any>,
-      {
-        onClick: (e: React.MouseEvent) => {
-          children.props?.onClick?.(e);
-          if (!e.defaultPrevented) openModal(e);
-        },
-        style: {
-          ...(children.props?.style ?? {}),
-          cursor: "zoom-in",
-        },
-      } as any
-    );
+    return React.cloneElement(children, {
+      onClick: (e: React.MouseEvent) => {
+        children.props.onClick?.(e);
+        if (!e.defaultPrevented) openModal(e);
+      },
+      style: {
+        ...(children.props.style ?? {}),
+        cursor: "zoom-in",
+      },
+    });
   }, [children, openModal]);
 
   const modalContent = useMemo(() => {
     // Clone child and force max sizing to fit viewport
-    return React.cloneElement(
-      children as React.ReactElement<any>,
-      {
-        onClick: (e: React.MouseEvent) => {
-          // prevent image click from closing immediately if needed
-          e.stopPropagation();
-        },
-        draggable: false,
-        style: {
-          ...(children.props?.style ?? {}),
-          maxWidth: "90vw",
-          maxHeight: "90vh",
-          width: "auto",
-          height: "auto",
-          objectFit: "contain",
-          cursor: "zoom-out",
-        },
-        className: [children.props?.className ?? "", "block"].join(" ").trim(),
-      } as any
-    );
+    return React.cloneElement(children, {
+      onClick: (e: React.MouseEvent) => {
+        // prevent image click from closing immediately if needed
+        e.stopPropagation();
+      },
+      draggable: false,
+      style: {
+        ...(children.props.style ?? {}),
+        maxWidth: "90vw",
+        maxHeight: "90vh",
+        width: "auto",
+        height: "auto",
+        objectFit: "contain",
+        cursor: "zoom-out",
+      },
+      className: [children.props.className ?? "", "block"].join(" ").trim(),
+    });
   }, [children]);
 
   return (

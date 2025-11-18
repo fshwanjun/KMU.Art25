@@ -3,10 +3,13 @@ import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import HorizontalWheelScroller from "@/app/components/HorizontalWheelScroller";
 import BehindRowsClient from "./../components/BehindRowsClient";
-import BgTitleSvg from "../components/BgTitleSvg";
+
+type BehindNode = {
+  acf?: Record<string, unknown>;
+};
 
 export default async function BehindPage() {
-  const behindPage = await fetchBySlug("pages", "behind");
+  const behindPage = await fetchBySlug<BehindNode>("pages", "behind");
   const behindData = getScfData(behindPage, FG_BEHIND);
   const rawGallery = (behindData as Record<string, unknown>).behindgallery as
     | unknown[]

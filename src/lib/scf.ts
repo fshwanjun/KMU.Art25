@@ -66,6 +66,7 @@ export function getScfData<T extends ScfDescriptor>(
 // SCF/ACF에서 이미지 필드가 숫자 ID나 객체 또는 URL 문자열로 올 수 있어,
 // 실제 접근 가능한 이미지 URL로 해석해 반환합니다.
 import { fetchWpNode } from "./wp";
+import { getRenderedString, WpRenderedText } from "./wp-helpers";
 
 export type ScfResolvedMedia = {
   url: string;
@@ -73,6 +74,26 @@ export type ScfResolvedMedia = {
   caption: string | null;
   zone: string | null;
 };
+
+type WpMediaNode = {
+  source_url?: string | null;
+  guid?: WpRenderedText | null;
+  alt_text?: string | null;
+  caption?: string | WpRenderedText | null;
+};
+
+async function safeFetchMediaById(
+  id: number
+): Promise<WpMediaNode | null> {
+  try {
+    return await fetchWpNode<WpMediaNode>({ type: "media", id });
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[resolveScfMediaUrl] media fetch failed", id, error);
+    }
+    return null;
+  }
+}
 
 export async function resolveScfMediaUrl(
   value: unknown
@@ -90,11 +111,8 @@ export async function resolveScfMediaUrl(
       null;
     const altFromObj =
       (typeof anyValue.alt === "string" && anyValue.alt) || null;
-    const captionFromObj =
-      (typeof anyValue.caption === "string" && anyValue.caption) ||
-      (typeof (anyValue as any)?.caption?.rendered === "string"
-        ? ((anyValue as any).caption.rendered as string)
-        : null);
+    const captionCandidate = anyValue.caption;
+    const captionFromObj = getRenderedString(captionCandidate) ?? null;
     if (directUrl) {
       return {
         url: directUrl,
@@ -110,10 +128,20 @@ export async function resolveScfMediaUrl(
   const numericId =
     typeof value === "number" ? value : isNumericString ? Number(value) : null;
   if (numericId) {
-    const media = await fetchWpNode<any>({ type: "media", id: numericId });
-    const url: unknown = media?.source_url ?? media?.guid?.rendered ?? null;
-    const alt: unknown = media?.alt_text ?? null;
-    const caption: unknown = media?.caption?.rendered ?? null;
+    const media = await safeFetchMediaById(numericId);
+    if (!media) {
+      return null;
+    }
+    const url: unknown =
+      typeof media.source_url === "string"
+        ? media.source_url
+        : getRenderedString(media.guid ?? undefined) ?? null;
+    const alt: unknown = media.alt_text ?? null;
+    const captionSource = media.caption;
+    const caption: unknown =
+      typeof captionSource === "string"
+        ? captionSource
+        : getRenderedString(captionSource ?? undefined) ?? null;
     if (typeof url === "string") {
       return {
         url,

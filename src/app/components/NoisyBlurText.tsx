@@ -350,7 +350,7 @@ export default function NoisyBlurText({
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
 
-    let start = performance.now();
+    const start = performance.now();
     const loop = () => {
       const t = (performance.now() - start) / 1000;
       gl.uniform1f(uTime, t);

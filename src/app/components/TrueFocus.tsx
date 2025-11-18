@@ -20,6 +20,11 @@ interface FocusRect {
   height: number;
 }
 
+type FocusHighlightStyle = React.CSSProperties & {
+  ["--border-color"]?: string;
+  ["--glow-color"]?: string;
+};
+
 const TrueFocus: React.FC<TrueFocusProps> = ({
   sentence = "True Focus",
   manualMode = false,
@@ -80,6 +85,11 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
     }
   };
 
+  const highlightStyle: FocusHighlightStyle = {
+    "--border-color": borderColor,
+    "--glow-color": glowColor,
+  };
+
   return (
     <div
       className="relative flex gap-4 justify-center items-center flex-wrap"
@@ -116,10 +126,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
           opacity: activeIndex >= 0 ? 1 : 0,
         }}
         transition={{ duration: animationDuration }}
-        style={{
-          ["--border-color" as any]: borderColor,
-          ["--glow-color" as any]: glowColor,
-        }}
+        style={highlightStyle}
       >
         <span
           className="absolute w-4 h-4 border-[3px] rounded-[3px] top-[-10px] left-[-10px] border-r-0 border-b-0"

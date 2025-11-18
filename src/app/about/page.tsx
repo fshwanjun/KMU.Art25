@@ -2,10 +2,15 @@ import { DFlipViewer } from "@/app/components/dflip-viewer";
 import { FG_ABOUT } from "@/lib/constants";
 import { fetchBySlug } from "@/lib/wp";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
-import BgTitleSvg from "../components/BgTitleSvg";
+import { getFormattedValue, getRenderedString } from "@/lib/wp-helpers";
+
+type AboutPageResponse = {
+  acf?: Record<string, unknown>;
+  content?: unknown;
+};
 
 export default async function AboutPage() {
-  const aboutPage = await fetchBySlug("pages", "about");
+  const aboutPage = await fetchBySlug<AboutPageResponse>("pages", "about");
   const aboutData = getScfData(aboutPage, FG_ABOUT);
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const trimmedBase = basePath.replace(/^\/|\/$/g, "");
@@ -16,18 +21,15 @@ export default async function AboutPage() {
     "info-name": string;
   }>;
   const poster = await resolveScfMediaUrl(aboutData.poster as unknown);
-  const editorHtml = (aboutPage as any)?.content?.rendered as
-    | string
-    | undefined;
+  const editorHtml = aboutPage
+    ? getRenderedString(aboutPage.content)
+    : undefined;
   const dateRaw = aboutData.date as unknown;
+  const dateFormatted = getFormattedValue(dateRaw);
   const dateHtml = Array.isArray(dateRaw)
     ? dateRaw.join("<br />")
-    : typeof dateRaw === "object" &&
-      dateRaw &&
-      "formatted_value" in (dateRaw as Record<string, unknown>)
-    ? String((dateRaw as any).formatted_value ?? "")
-    : typeof dateRaw === "string"
-    ? (dateRaw as string).replace(/\n/g, "<br />")
+    : dateFormatted
+    ? dateFormatted.replace(/\n/g, "<br />")
     : "";
   return (
     <div className="w-full p-4 max-w-[1000px] mx-auto relative z-20">

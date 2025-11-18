@@ -2,13 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState, useId } from "react";
 
+type JQueryStatic = typeof import("jquery");
+
 const scriptPromises = new Map<string, Promise<void>>();
 let jqueryReady: Promise<void> | null = null;
 
 declare global {
   interface Window {
-    jQuery?: any;
-    $?: any;
+    jQuery?: JQueryStatic;
+    $?: JQueryStatic;
     DFLIP?: { parseBooks: () => void };
     dFlipLocation?: string;
   }
@@ -204,7 +206,7 @@ async function ensureJQuery() {
 
   if (!jqueryReady) {
     jqueryReady = import("jquery").then((module) => {
-      const jq = module.default ?? module;
+      const jq = (module.default ?? module) as JQueryStatic;
       window.jQuery = jq;
       window.$ = jq;
     });
@@ -288,15 +290,21 @@ export function DFlipViewer({
     const element = bookRef.current;
 
     const dispose = () => {
-      const existing = (window as Record<string, any>)[bookId];
-      if (existing?.dispose) {
+      const registry = window as unknown as Record<string, unknown>;
+      const existing = registry[bookId];
+      if (
+        existing &&
+        typeof existing === "object" &&
+        "dispose" in existing &&
+        typeof (existing as { dispose?: () => void }).dispose === "function"
+      ) {
         try {
-          existing.dispose();
+          (existing as { dispose: () => void }).dispose();
         } catch {
           // ignore dispose errors, dFlip will clean up on next init
         }
       }
-      delete (window as Record<string, any>)[bookId];
+      delete registry[bookId];
       element.innerHTML = "";
     };
 

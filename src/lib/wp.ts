@@ -81,7 +81,7 @@ async function fetchWpCollectionPage<T>(
 }
 
 // 단일 노드를 id로 조회합니다.
-export async function fetchWpNode<T = any>(params: {
+export async function fetchWpNode<T = unknown>(params: {
   type: SupportedWpType;
   id: string | number;
 }): Promise<T> {
@@ -105,7 +105,7 @@ export async function fetchWpNode<T = any>(params: {
 }
 
 // 페이지네이션 응답을 모두 이어붙여 반환합니다.
-export async function fetchListAll<T = any>(
+export async function fetchListAll<T = unknown>(
   type: SupportedWpType,
   params: WpQueryParams = {}
 ): Promise<WpCollectionResult<T>> {
@@ -136,7 +136,7 @@ export async function fetchListAll<T = any>(
 }
 
 // 슬러그로 특정 게시물을 찾아 반환합니다.
-export async function fetchBySlug<T = any>(
+export async function fetchBySlug<T = unknown>(
   type: SupportedWpType,
   slug: string,
   params: WpQueryParams = {}

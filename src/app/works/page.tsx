@@ -2,10 +2,15 @@ import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import WorksGridClient from "@/app/components/WorksGridClient";
-import BgTitleSvg from "../components/BgTitleSvg";
+
+type WorkNode = {
+  id: number;
+  slug: string;
+  acf?: Record<string, unknown>;
+};
 
 export default async function WorksPage() {
-  const { items: works } = await fetchListAll("works", {
+  const { items: works } = await fetchListAll<WorkNode>("works", {
     per_page: 100,
     page: 1,
   });
@@ -44,19 +49,15 @@ export default async function WorksPage() {
           zoneKey = null;
           zoneLabel = normalized;
         }
-      } else if (
-        rawZone &&
-        typeof rawZone === "object" &&
-        ("value" in (rawZone as any) || "label" in (rawZone as any))
-      ) {
+      } else if (rawZone && typeof rawZone === "object") {
+        const zoneRecord = rawZone as Record<string, unknown>;
+        if (!("value" in zoneRecord) && !("label" in zoneRecord)) {
+          return { work, data, thumb, zoneKey, zoneLabel };
+        }
         const valueStr: string | null =
-          typeof (rawZone as any).value === "string"
-            ? (rawZone as any).value
-            : null;
+          typeof zoneRecord.value === "string" ? zoneRecord.value : null;
         const labelStr: string | null =
-          typeof (rawZone as any).label === "string"
-            ? (rawZone as any).label
-            : null;
+          typeof zoneRecord.label === "string" ? zoneRecord.label : null;
         const lower = (valueStr ?? "").toLowerCase();
         if (lower && (lower as string) in keyToLabel) {
           const k = lower as ZoneKey;
@@ -78,17 +79,16 @@ export default async function WorksPage() {
   const gridItems = items.map(({ work, data, thumb, zoneKey, zoneLabel }) => ({
     id: work.id,
     slug: work.slug,
-    title: (data.title as string) ?? "",
-    name: (data.name as string) ?? "",
+    title: typeof data.title === "string" ? data.title : "",
+    name: typeof data.name === "string" ? data.name : "",
     zoneKey,
     zoneLabel,
     thumbnail: thumb?.url
       ? {
           url: thumb.url,
           alt:
-            (thumb.alt as string | null | undefined) ??
-            (data.title as string) ??
-            null,
+            thumb.alt ??
+            (typeof data.title === "string" ? data.title : null),
         }
       : null,
   }));
