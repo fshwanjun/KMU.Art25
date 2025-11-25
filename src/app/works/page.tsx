@@ -79,20 +79,20 @@ export default async function WorksPage() {
 
   const gridItems = items
     .map(({ work, data, thumb, zoneKey, zoneLabel }) => ({
-      id: work.id,
-      slug: work.slug,
-      title: typeof data.title === "string" ? data.title : "",
-      name: typeof data.name === "string" ? data.name : "",
-      zoneKey,
-      zoneLabel,
-      thumbnail: thumb?.url
-        ? {
-            url: thumb.url,
-            alt:
-              thumb.alt ??
-              (typeof data.title === "string" ? data.title : null),
-          }
-        : null,
+    id: work.id,
+    slug: work.slug,
+    title: typeof data.title === "string" ? data.title : "",
+    name: typeof data.name === "string" ? data.name : "",
+    zoneKey,
+    zoneLabel,
+    thumbnail: thumb?.url
+      ? {
+          url: thumb.url,
+          alt:
+            thumb.alt ??
+            (typeof data.title === "string" ? data.title : null),
+        }
+      : null,
     }))
     .sort((a, b) => a.name.localeCompare(b.name, "ko"));
 

@@ -66,7 +66,7 @@ export default async function WorkDetailPage({
   );
 
   return (
-    <div className="relative mx-auto max-w-[1200px] px-4 md:px-0">
+    <div className="relative z-20 mx-auto max-w-[1200px] px-4 md:px-0">
       {/* Mobile Layout: Vertical Stack */}
       <div className="flex flex-col md:hidden gap-2 md:gap-6 pb-20 md:pb-12">
         {/* Title */}

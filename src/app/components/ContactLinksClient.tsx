@@ -87,14 +87,14 @@ export default function ContactLinksClient({ works }: ContactLinksClientProps) {
               </span>
               <div className="flex flex-col justify-center gap-1">
                 {work.instagram && (
-                  <span className="text-[18px] font-[800] leading-[1]">
-                    @{work.instagram}
-                  </span>
+                <span className="text-[18px] font-[800] leading-[1]">
+                  @{work.instagram}
+                </span>
                 )}
                 {work.email && (
-                  <span className="text-[18px] font-[800] leading-[1]">
-                    {work.email}
-                  </span>
+                <span className="text-[18px] font-[800] leading-[1]">
+                  {work.email}
+                </span>
                 )}
               </div>
             </Link>
