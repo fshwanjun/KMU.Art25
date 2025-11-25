@@ -28,14 +28,14 @@ export default function WorksGridClient({
   items,
   className,
 }: WorksGridClientProps) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [filter, setFilter] = useState<
     "all" | "gallery" | "lobby" | "oneoneone"
   >("all");
   const [query, setQuery] = useState<string>("");
 
-  const handleEnter = (index: number) => setHoveredIndex(index);
-  const handleLeave = () => setHoveredIndex(null);
+  const handleEnter = (id: number) => setHoveredId(id);
+  const handleLeave = () => setHoveredId(null);
 
   const filteredItems = (
     filter === "all" ? items : items.filter((item) => item.zoneKey === filter)
@@ -52,7 +52,7 @@ export default function WorksGridClient({
     all: "All",
     gallery: "Gallery",
     lobby: "Lobby",
-    oneoneone: "111호",
+    oneoneone: "110호",
   };
 
   return (
@@ -90,9 +90,10 @@ export default function WorksGridClient({
           })}
         </div>
       </div>
-      <ul className="grid grid-cols-3 gap-y-12 gap-x-2 p-2 py-4 md:py-0 md:p-4 md:gap-y-20 md:gap-x-20 overflow-hidden">
-        {filteredItems.map((item, index) => {
-          const isBlurred = hoveredIndex !== null && hoveredIndex !== index;
+      <ul className="grid grid-cols-2 md:grid-cols-3 gap-y-12 gap-x-2 p-2 py-4 md:py-0 md:p-4 md:gap-y-20 md:gap-x-20 overflow-hidden">
+        {filteredItems.map((item) => {
+          const isHovered = hoveredId === item.id;
+          const isBlurred = hoveredId !== null && !isHovered;
           const hasThumbnail = Boolean(item.thumbnail?.url);
           const zoneClass = `zone-${String(item.zoneKey ?? "none")}`;
           return (
@@ -101,13 +102,13 @@ export default function WorksGridClient({
               className={["h-fit transition duration-200", zoneClass].join(" ")}
               data-zone={item.zoneKey ?? ""}
               style={{ filter: isBlurred ? "blur(4px)" : "none" }}
-              onMouseEnter={() => handleEnter(index)}
+              onMouseEnter={() => handleEnter(item.id)}
               onMouseLeave={handleLeave}
             >
               <Link
                 href={`/works/${encodeURIComponent(item.slug)}`}
                 className="group flex h-full w-full flex-col items-center justify-start gap-4"
-                onFocus={() => handleEnter(index)}
+                onFocus={() => handleEnter(item.id)}
                 onBlur={handleLeave}
               >
                 <div className="relative flex w-full flex-col items-center justify-center">
@@ -123,13 +124,13 @@ export default function WorksGridClient({
                     </div>
                   )}
                   <div
-                    className="pointer-events-none absolute left-1/2 top-[calc(100%+10px)] -translate-x-1/2 text-center text-black transition duration-200 opacity-100 md:opacity-0"
+                    className="pointer-events-none relative md:absolute left-0 md:left-1/2 top-0 md:top-[calc(100%+10px)] md:-translate-x-1/2 text-center text-black transition duration-200 opacity-100 md:opacity-0 mt-2 md:mt-0"
                     style={{
-                      opacity: hoveredIndex === index ? 1 : undefined,
+                      opacity: isHovered ? 1 : undefined,
                     }}
                   >
-                    <h1>{item.title}</h1>
-                    <p>{item.name}</p>
+                    <h1 className="text-[16px] md:text-base">{item.title}</h1>
+                    <p className="text-[14px] md:text-base">{item.name}</p>
                   </div>
                 </div>
               </Link>

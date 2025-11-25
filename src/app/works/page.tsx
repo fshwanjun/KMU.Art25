@@ -24,12 +24,13 @@ export default async function WorksPage() {
       const keyToLabel: Record<ZoneKey, string> = {
         gallery: "Gallery",
         lobby: "Lobby",
-        oneoneone: "111호",
+        oneoneone: "110호",
       };
       const labelToKey: Record<string, ZoneKey> = {
         Gallery: "gallery",
         Lobby: "lobby",
         "111호": "oneoneone",
+        "110호": "oneoneone",
       };
       let zoneKey: ZoneKey | null = null;
       let zoneLabel: string | null = null;
@@ -76,22 +77,24 @@ export default async function WorksPage() {
     })
   );
 
-  const gridItems = items.map(({ work, data, thumb, zoneKey, zoneLabel }) => ({
-    id: work.id,
-    slug: work.slug,
-    title: typeof data.title === "string" ? data.title : "",
-    name: typeof data.name === "string" ? data.name : "",
-    zoneKey,
-    zoneLabel,
-    thumbnail: thumb?.url
-      ? {
-          url: thumb.url,
-          alt:
-            thumb.alt ??
-            (typeof data.title === "string" ? data.title : null),
-        }
-      : null,
-  }));
+  const gridItems = items
+    .map(({ work, data, thumb, zoneKey, zoneLabel }) => ({
+      id: work.id,
+      slug: work.slug,
+      title: typeof data.title === "string" ? data.title : "",
+      name: typeof data.name === "string" ? data.name : "",
+      zoneKey,
+      zoneLabel,
+      thumbnail: thumb?.url
+        ? {
+            url: thumb.url,
+            alt:
+              thumb.alt ??
+              (typeof data.title === "string" ? data.title : null),
+          }
+        : null,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name, "ko"));
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-6 relative z-20">

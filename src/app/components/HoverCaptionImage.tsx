@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cleanCaption } from "@/lib/util";
 
 type HoverCaptionImageProps = {
   src: string;
@@ -66,12 +67,13 @@ export default function HoverCaptionImage({
           }
         />
       </div>
-      {caption && visible && pos && (
+      {cleanCaption(caption) && visible && pos && (
         <h1
           className="flex items-center justify-center pointer-events-none absolute z-30 w-max whitespace-pre-line rounded bg-black px-3 py-2 text-white shadow m-0 leading-none"
           style={{ left: pos.x, top: pos.y }}
-          dangerouslySetInnerHTML={{ __html: caption }}
-        />
+        >
+          {cleanCaption(caption)}
+        </h1>
       )}
     </div>
   );

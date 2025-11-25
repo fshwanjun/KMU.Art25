@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { cleanCaption } from "@/lib/util";
 
 type LightboxImage = {
   src: string;
@@ -71,9 +72,9 @@ export default function LightboxProvider({
               className="block max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
               draggable={false}
             />
-            {current.caption && (
+            {cleanCaption(current.caption) && (
               <div className="px-3 py-1 text-center text-white text-sm">
-                <p dangerouslySetInnerHTML={{ __html: current.caption }} />
+                <p>{cleanCaption(current.caption)}</p>
               </div>
             )}
             <button
