@@ -53,7 +53,7 @@ function toPositiveInt(value: WpQueryValue | undefined) {
 }
 
 // 목록 응답을 한 페이지 단위로 가져오는 공통 fetch 함수입니다.
-async function fetchWpCollectionPage<T>(
+export async function fetchWpCollectionPage<T>(
   type: SupportedWpType,
   params: WpQueryParams = {}
 ): Promise<WpCollectionResult<T>> {
