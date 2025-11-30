@@ -14,7 +14,7 @@ export default async function AboutPage() {
   const aboutData = getScfData(aboutPage, FG_ABOUT);
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   const trimmedBase = basePath.replace(/^\/|\/$/g, "");
-  const catalogHref = `/${trimmedBase ? `${trimmedBase}/` : ""}kmufa24.pdf`;
+  const catalogHref = `/${trimmedBase ? `${trimmedBase}/` : ""}kmufa25.pdf`;
 
   const aboutInfo = aboutData.info as Array<{
     "info-title": string;
