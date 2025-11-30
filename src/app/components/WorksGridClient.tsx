@@ -52,7 +52,7 @@ export default function WorksGridClient({
     all: "All",
     gallery: "Gallery",
     lobby: "Lobby",
-    oneoneone: "111호",
+    oneoneone: "110호",
   };
 
   return (

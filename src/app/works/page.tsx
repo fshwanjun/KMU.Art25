@@ -29,7 +29,6 @@ export default async function WorksPage() {
       const labelToKey: Record<string, ZoneKey> = {
         Gallery: "gallery",
         Lobby: "lobby",
-        "111호": "oneoneone",
         "110호": "oneoneone",
       };
       let zoneKey: ZoneKey | null = null;
