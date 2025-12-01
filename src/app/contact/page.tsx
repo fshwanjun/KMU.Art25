@@ -13,7 +13,7 @@ export default async function ContactPage() {
     per_page: 100,
     page: 1,
   });
-  const prepared = works.map((work: WorkNode) => {
+  const prepared = works.map((work) => {
     const workData = getScfData(work, FG_WORK);
     const contactField =
       (workData.contact as Record<string, unknown> | undefined) ?? undefined;

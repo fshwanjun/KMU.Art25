@@ -2,6 +2,7 @@ import { fetchListAll } from "@/lib/wp";
 import { FG_WORK } from "@/lib/constants";
 import { getScfData, resolveScfMediaUrl } from "@/lib/scf";
 import WorksGridClient from "@/app/components/WorksGridClient";
+import BgTitleSvg from "../components/BgTitleSvg";
 
 type WorkNode = {
   id: number;
