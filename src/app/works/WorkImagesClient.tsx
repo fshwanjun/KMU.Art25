@@ -52,8 +52,8 @@ function processCaption(caption: string | null): string | null {
             const attributeNames = content.match(/([a-zA-Z][a-zA-Z0-9-]*)\s*=/g);
             if (attributeNames && attributeNames.length > 0) {
               const title = attributeNames
-                .map(attr => attr.replace(/\s*=$/, ''))
-                .filter(name => name.toLowerCase() !== 'a')
+                .map((attr: string) => attr.replace(/\s*=$/, ''))
+                .filter((name: string) => name.toLowerCase() !== 'a')
                 .join(' ');
               return `&lt;${title}&gt;`;
             }
@@ -65,7 +65,7 @@ function processCaption(caption: string | null): string | null {
           const validAnchorAttributes = ['href', 'target', 'rel', 'class', 'id', 'title', 'download'];
           const attributes = content.match(/([a-zA-Z][a-zA-Z0-9-]*)\s*=/g);
           if (attributes) {
-            const hasInvalidAttribute = attributes.some(attr => {
+            const hasInvalidAttribute = attributes.some((attr: string) => {
               const attrName = attr.replace(/\s*=$/, '').toLowerCase();
               return !validAnchorAttributes.includes(attrName);
             });
