@@ -187,29 +187,10 @@ export default function Home() {
           />
         </svg>
 
-        {titleSvgs.map(({ key, path, className, blur, backgroundColor, pathClassName, dimensions }) => {
-          const clipId = `clip${key}`;
+        {titleSvgs.map(({ key, path, className }) => {
           return (
             <svg key={key} className={`${className} stroke-black stroke-2`} viewBox={path.viewBox}>
-              <defs>
-                <clipPath id={clipId} clipPathUnits="userSpaceOnUse">
-                  <path d={path.d} />
-                </clipPath>
-              </defs>
-              <g clipPath={`url(#${clipId})`}>
-                <foreignObject x="0" y="0" width={dimensions.width} height={dimensions.height}>
-                  <div
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      backdropFilter: `blur(${blur})`,
-                      WebkitBackdropFilter: `blur(${blur})`,
-                      ...(backgroundColor && { backgroundColor }),
-                    }}
-                  />
-                </foreignObject>
-              </g>
-              <path d={path.d} className={pathClassName} />
+              <path d={path.d} fill="white" fillOpacity="0.5" />
             </svg>
           );
         })}
