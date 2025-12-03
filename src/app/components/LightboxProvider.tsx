@@ -72,9 +72,9 @@ export default function LightboxProvider({
               className="block max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
               draggable={false}
             />
-            {cleanCaption(current.caption) && (
+            {cleanCaption(current.caption, true) && (
               <div className="px-3 py-1 text-center text-white text-sm">
-                <p>{cleanCaption(current.caption)}</p>
+                <p dangerouslySetInnerHTML={{ __html: cleanCaption(current.caption, true) || '' }} />
               </div>
             )}
             <button

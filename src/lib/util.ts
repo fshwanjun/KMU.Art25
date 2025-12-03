@@ -10,7 +10,7 @@ export function encodeSlug(slug: string) {
   return encodeURIComponent(slug);
 }
 
-export function cleanCaption(caption: string | null | undefined): string | null {
+export function cleanCaption(caption: string | null | undefined, keepBr: boolean = false): string | null {
   if (!caption) return null;
   
   let cleaned = caption;
@@ -18,6 +18,11 @@ export function cleanCaption(caption: string | null | undefined): string | null 
   // Remove <p> and </p> tags first (including with attributes and unclosed tags)
   cleaned = cleaned.replace(/<p[^>]*>/gi, ''); // Remove opening <p> tags with any attributes
   cleaned = cleaned.replace(/<\/p>/gi, ''); // Remove closing </p> tags
+  
+  // Remove <br> and <br/> tags (including with attributes) only if keepBr is false
+  if (!keepBr) {
+    cleaned = cleaned.replace(/<br\s*\/?>/gi, ''); // Remove <br> and <br/> tags
+  }
   
   // Decode HTML entities (e.g., &#8216; -> ')
   // Use manual decoding for both server and client to avoid parsing issues with text like <제목>

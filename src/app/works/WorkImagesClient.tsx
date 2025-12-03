@@ -21,6 +21,9 @@ export default function WorkImagesClient({ images }: { images: ImageItem[] }) {
           caption = caption.replace(/<p(\s+[^>]*)?>/gi, '').replace(/<\/p>/gi, '');
           console.log('After removing <p> tags:', caption);
           
+          // Remove <br> and <br/> tags
+          caption = caption.replace(/<br\s*\/?>/gi, '');
+          
           // HTML 엔티티 디코딩
           caption = caption
             .replace(/&lt;/g, '<')
@@ -34,7 +37,7 @@ export default function WorkImagesClient({ images }: { images: ImageItem[] }) {
           // 단, 실제 HTML 태그가 아닌 경우만 (예: <p>, <br> 등은 제외)
           caption = caption.replace(/<([a-zA-Z][a-zA-Z0-9\-!]*[!]?)>/g, (match, tagName) => {
             // 실제 HTML 태그가 아닌 경우만 인코딩
-            const validHtmlTags = ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'span', 'div', 'a'];
+            const validHtmlTags = ['strong', 'em', 'b', 'i', 'u', 'span', 'div', 'a'];
             if (validHtmlTags.includes(tagName.toLowerCase())) {
               return match; // 유효한 HTML 태그는 그대로 유지
             }
@@ -44,7 +47,7 @@ export default function WorkImagesClient({ images }: { images: ImageItem[] }) {
           
           // 닫는 태그도 처리
           caption = caption.replace(/<\/([a-zA-Z][a-zA-Z0-9\-!]*[!]?)>/g, (match, tagName) => {
-            const validHtmlTags = ['p', 'br', 'strong', 'em', 'b', 'i', 'u', 'span', 'div', 'a'];
+            const validHtmlTags = ['strong', 'em', 'b', 'i', 'u', 'span', 'div', 'a'];
             if (validHtmlTags.includes(tagName.toLowerCase())) {
               return match;
             }
