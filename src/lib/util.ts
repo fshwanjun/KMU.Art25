@@ -26,6 +26,7 @@ export function cleanCaption(caption: string | null | undefined, keepBr: boolean
   
   // Decode HTML entities (e.g., &#8216; -> ')
   // Use manual decoding for both server and client to avoid parsing issues with text like <제목>
+  // 먼저 특정 엔티티들을 처리
   cleaned = cleaned
     .replace(/&#8216;/g, "'")
     .replace(/&#8217;/g, "'")
@@ -33,12 +34,18 @@ export function cleanCaption(caption: string | null | undefined, keepBr: boolean
     .replace(/&#8221;/g, '"')
     .replace(/&#8211;/g, '–')
     .replace(/&#8212;/g, '—')
+    .replace(/&#8230;/g, '…') // ellipsis
+    .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&nbsp;/g, ' ');
+    .replace(/&nbsp;/g, ' ')
+    // 일반적인 숫자 엔티티 디코딩 (&#숫자; 형식) - 남은 것들 처리
+    .replace(/&#(\d+);/g, (match, num) => {
+      const code = parseInt(num, 10);
+      return String.fromCharCode(code);
+    });
   
   return cleaned.trim() || null;
 }
